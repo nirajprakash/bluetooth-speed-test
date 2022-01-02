@@ -278,14 +278,24 @@ public void setUpAccept() {
         if (!mIsReceiving && mSenderThread != null) {
             long timeDiff = (currentTime - mSenderThread.getStartTime()) / 1000;
             return " Sending:  \n" +
-                    "Period: $timeDiff \n" +
-                    "Counter: ${mSenderThread!!.getCounter()} \n";
+                    "Period: " +
+                    timeDiff  +
+                    " \n" +
+                    "Counter: " +
+                    mSenderThread.getCounter() +
+                    " \n";
         } else if (mReceiverService != null) {
             long timeDiff = (currentTime - mReceiverService.getStartTime()) / 1000;
             return " Receiving:  \n" +
-                    "Period: $timeDiff \n" +
-                    "Counter: ${mReceiverService!!.getCounter()} \n" +
-                    "BytesCounter: ${mReceiverService!!.getByteCounter()} \n";
+                    "Period: " +
+                    timeDiff +
+                    " \n" +
+                    "Counter: " +
+                    mReceiverService.getCounter() +
+                    " \n" +
+                    "BytesCounter: " +
+                    mReceiverService.getByteCounter() +
+                    " \n";
         }
         return "No result";
 
