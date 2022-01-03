@@ -151,12 +151,6 @@ public class DeviceActivity extends AppCompatActivity {
             }
         });
 
-
-
-
-
-
-
         vBinding.deviceSendReceive.setOnClickListener(v -> {
             vBinding.deviceSendReceiveFreqLog.setText("..");
             mBluetoothService.setupSendReceive();
@@ -165,8 +159,7 @@ public class DeviceActivity extends AppCompatActivity {
 
         vBinding.deviceSendSetup.setOnClickListener(v -> {
             /*vBinding.deviceSendFreqLog.setText("..");
-            mBluetoothService.setupSender();
-*/
+            mBluetoothService.setupSender();*/
              mBluetoothService.sendSetup();
         });
 
@@ -174,12 +167,10 @@ public class DeviceActivity extends AppCompatActivity {
             mBluetoothService.startEEG();
         });
 
-
         vBinding.deviceChatToggle.setOnClickListener(v -> {
             mBluetoothService.stopChat();
             mReadBytes = 0;
             mCurrentMessage = null;
-
         });
 
         vBinding.deviceCounter.setOnClickListener(v -> {
