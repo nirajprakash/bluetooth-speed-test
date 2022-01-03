@@ -15,6 +15,7 @@ public class DeviceCommands {
     public static String INITIAL_HEART_BEAT = "28,13,10";
     public static String HEART_BEAT = "28,32,32,104,13";
     public static String TRANSMISSION = "28,32,32,119,32,48,101,13,10";
+    public static String END_ONGOING = "28,32,32,119,32,38,33,13";
     public static int channel_nos = 24;
 
 
@@ -209,12 +210,12 @@ public class DeviceCommands {
      *                                       channel Data
      */
 
-    public static int channelIndex(){
+    private static int channelIndex(){
         int index=channel_nos+32;
         return index;
     }
 
-    public static String channelLabel(){
+    private static String channelLabel(){
         String bit8_empty = "        ";
         String bit7_empty = "       ";
         int NoOfChnls=channel_nos;
@@ -347,7 +348,7 @@ public class DeviceCommands {
      */
 
 
-    public static String emptySpaces80(String s) {
+    private static String emptySpaces80(String s) {
         StringBuilder s1 = new StringBuilder(s);
         for (int i = 0; i < 80 - s.length(); i++) {
             s1.append(" ");
@@ -355,7 +356,7 @@ public class DeviceCommands {
         return s1.toString();
     }
 
-    public static String emptySpaces8(String s) {
+    private static String emptySpaces8(String s) {
         StringBuilder s1 = new StringBuilder(s);
         for (int i = 0; i < 8 - s.length(); i++) {
             s1.append(" ");
@@ -364,7 +365,7 @@ public class DeviceCommands {
     }
 
 
-    public static String emptySpaces44(String s) {
+    private static String emptySpaces44(String s) {
         StringBuilder s1 = new StringBuilder(s);
         Integer len = s.length();
         for (int i = 0; i < 44 - s.length(); i++) {
@@ -374,7 +375,7 @@ public class DeviceCommands {
     }
 
 
-    public static String stringToHexadecimal(String strvalue) {
+    private static String stringToHexadecimal(String strvalue) {
         StringBuilder sb = new StringBuilder();
         //Converting string to character array
         char ch[] = strvalue.toCharArray();
@@ -388,7 +389,7 @@ public class DeviceCommands {
         return result;
     }
 
-    public static String HexatoDecimal(String strvalue) {
+    private static String HexatoDecimal(String strvalue) {
         StringBuilder sb1 = new StringBuilder();
         //Converting string to character array
         //char ch[] = strvalue.toCharArray();
@@ -404,7 +405,7 @@ public class DeviceCommands {
         return result;
     }
 
-    public static String emptySpacesNx80(String s, Integer N) {
+    private static String emptySpacesNx80(String s, Integer N) {
         StringBuilder s1 = new StringBuilder(s);
         Integer len = s.length();
         for (int i = 0; i < 80- s.length(); i++) {
@@ -413,7 +414,7 @@ public class DeviceCommands {
         return s1.toString();
     }
 
-    public static String emptySpacesNx80Transducer(String s, Integer N) {
+    private static String emptySpacesNx80Transducer(String s, Integer N) {
         StringBuilder s1 = new StringBuilder();
         for (int i = 0; i < N; i++) {
             s1.append(emptySpacesNx80(s, N));
@@ -422,7 +423,7 @@ public class DeviceCommands {
 
     }
 
-    public static String emptySpacesNx8(String s, Integer N) {
+    private static String emptySpacesNx8(String s, Integer N) {
         StringBuilder s1 = new StringBuilder(s);
         Integer len = s.length();
         for (int i = 0; i < 8- s.length(); i++) {
@@ -431,7 +432,7 @@ public class DeviceCommands {
         return s1.toString();
     }
 
-    public static  String repeat68(String s, Integer N) {
+    private static  String repeat68(String s, Integer N) {
         StringBuilder s1 = new StringBuilder();
         for (int i = 0; i < N; i++) {
             s1.append(emptySpacesNx8(s, N));
@@ -440,7 +441,7 @@ public class DeviceCommands {
 
     }
 
-    public static String emptySpacesNx32(String s, Integer N) {
+    private static String emptySpacesNx32(String s, Integer N) {
         StringBuilder s1 = new StringBuilder(s);
         Integer len = s.length();
         for (int i = 0; i < 32- s.length(); i++) {
@@ -449,7 +450,7 @@ public class DeviceCommands {
         return s1.toString();
     }
 
-    public static String repeat68of32bytes(String s, Integer N) {
+    private static String repeat68of32bytes(String s, Integer N) {
         StringBuilder s1 = new StringBuilder();
         int dt=24;
         for (int i = 0; i < N; i++) {

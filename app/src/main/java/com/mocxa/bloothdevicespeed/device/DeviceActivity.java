@@ -130,6 +130,7 @@ public class DeviceActivity extends AppCompatActivity {
 
     ActivityDeviceBinding vBinding;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,20 +154,26 @@ public class DeviceActivity extends AppCompatActivity {
 
 
 
-        vBinding.deviceSendSetup.setOnClickListener(v -> {
-            /*vBinding.deviceSendFreqLog.setText("..");
-            mBluetoothService.setupSender();
-*/
-           //TODO mBluetoothService.sendSetup();
-        });
+
 
 
         vBinding.deviceSendReceive.setOnClickListener(v -> {
             vBinding.deviceSendReceiveFreqLog.setText("..");
-            mBluetoothService.setupSender();
-            mBluetoothService.setupReceiver();
+            mBluetoothService.setupSendReceive();
 
         });
+
+        vBinding.deviceSendSetup.setOnClickListener(v -> {
+            /*vBinding.deviceSendFreqLog.setText("..");
+            mBluetoothService.setupSender();
+*/
+             mBluetoothService.sendSetup();
+        });
+
+        vBinding.deviceStartEeg.setOnClickListener(v -> {
+            mBluetoothService.startEEG();
+        });
+
 
         vBinding.deviceChatToggle.setOnClickListener(v -> {
             mBluetoothService.stopChat();
@@ -442,5 +449,11 @@ public class DeviceActivity extends AppCompatActivity {
         // Request discover from BluetoothAdapter
         mBluetoothAdapter.startDiscovery();
     }
+
+    /* **********************************************************************
+     *
+     */
+
+
 
 }

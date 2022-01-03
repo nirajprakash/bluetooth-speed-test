@@ -68,11 +68,7 @@ public class DeviceSender {
 //                        Log.i("mainActivity: ", "mCurrentMessage 2");
                         String message = (String) objData;
                         write(message);
-                      /*  TODO uncomment byte[] readBuf = (byte[]) objData;
-                        // construct a string from the valid bytes in the buffer
-                        // construct a string from the valid bytes in the buffer
-                        String readMessage = new String(readBuf, 0, msg.arg1);
-                        mCurrentMessage = readMessage;*/
+
 
                     }
                 }
