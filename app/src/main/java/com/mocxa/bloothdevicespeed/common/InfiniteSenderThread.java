@@ -16,13 +16,14 @@ public class InfiniteSenderThread extends Thread {
 
     BluetoothSocket mSocket;
 
-    private OutputStream mOutputStream  = null;
+    private OutputStream mOutputStream = null;
     private AtomicBoolean mIsConnected = new AtomicBoolean(false);
 
-    Object myLock = new Object();
+    final Object myLock = new Object();
 
     long mStartTime = System.currentTimeMillis();
     int mCounter = 0;
+    int mByteCounter = 0;
 
     public InfiniteSenderThread(BluetoothSocket pSocket) {
         mSocket = pSocket;
@@ -37,23 +38,29 @@ public class InfiniteSenderThread extends Thread {
     @Override
     public void run() {
         //        Log.i("SenderService:", "SenderService run")
-        mStartTime = System.currentTimeMillis();
+
         while (!isInterrupted()) {
 
 //            Log.i("SenderService:", "SenderService run 1")
-            if(mIsConnected.get()){
+            if (mIsConnected.get() && mOutputStream!=null) {
 
 //                Log.i("SenderService:", "SenderService run 2")
-                synchronized(myLock) {
+                synchronized (myLock) {
 
 //                    Log.i("SenderService:", "SenderService run 3")
                     try {
 
+                        if(mCounter == 0){
+                            mStartTime = System.currentTimeMillis();
+                        }
+
 
 //                        Log.i("SenderService:", "SenderService $mCounter")
                         mCounter++;
-                        mOutputStream.write("  Message: $mCounter".getBytes(Charset.defaultCharset()));
-                    } catch (IOException e ) {
+                        byte[] bytes = "  Message: $mCounter".getBytes(Charset.defaultCharset());
+                        this.mByteCounter += bytes.length;
+                        mOutputStream.write(bytes);
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
 
@@ -64,7 +71,7 @@ public class InfiniteSenderThread extends Thread {
         }
     }
 
-    public void toggleConnected(boolean isConnected){
+    public void toggleConnected(boolean isConnected) {
         mIsConnected.compareAndSet(!isConnected, isConnected);
         Log.i("SenderService: ", "toggleConnected: ${mIsConnected.get()}");
     }
@@ -73,9 +80,20 @@ public class InfiniteSenderThread extends Thread {
         return mStartTime;
     }
 
-    public int getCounter(){
-        return  mCounter;
+    public int getCounter() {
+        return mCounter;
     }
 
 
+    public int getByteCounter() {
+        return mByteCounter;
+    }
+
+
+    public void resetLog() {
+        synchronized(myLock) {
+            mByteCounter = 0;
+            mCounter = 0;
+        }
+    }
 }

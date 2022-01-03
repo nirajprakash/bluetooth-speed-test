@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,8 +23,11 @@ public class ReceiveThread extends Thread{
     final Object myLock = new Object();
 
     int mCounter = 0;
+    int mReadCounter = 0;
     int mByteCounter = 0;
     long mStartTime = System.currentTimeMillis();
+
+    static final int DEFAULT_BUFFER_SIZE = 2*1024;
 
     public ReceiveThread(BluetoothSocket pSocket, Handler pReadHandler){
         mReadHandler = pReadHandler;
@@ -52,18 +56,42 @@ public class ReceiveThread extends Thread{
                     int bytes = 0;
                     try {
 //                        mInputStream.read()
-
+                        if (mCounter == 0) {
+                            mStartTime = System.currentTimeMillis();
+                        }
+                        /*
+                        TODO approch 1
                         bytes = mInputStream.read(buffer);
 //                        Log.i("ReceiverService:", "ReceiverService $mCounter")
                         if (bytes > 0) {
-                            if (mByteCounter == 0) {
-                                mStartTime = System.currentTimeMillis();
-                            }
+
                             mByteCounter += bytes;
+                            mReadHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
+                                    .sendToTarget();
+
+                            mReadCounter++;
+                        }
+*/
+
+                        int availableBytes = mInputStream.available();
+                        if (availableBytes >0){
+                            buffer = new byte[Math.max(availableBytes, DEFAULT_BUFFER_SIZE)];
+                            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(Math.max(availableBytes, DEFAULT_BUFFER_SIZE));
+                            //inputStream.read();
+
+                            // bytes = inputStream.read(buffer);
+                            bytes = mInputStream.read(buffer,0,availableBytes);
+
+
+                            byteArrayOutputStream.write(buffer, 0, bytes);
+                            mByteCounter += bytes;
+                            mReadCounter++;
+
+                            mReadHandler.obtainMessage(MESSAGE_READ, bytes, -1,
+                                    byteArrayOutputStream).sendToTarget();
                         }
 
-                        mReadHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
-                                .sendToTarget();
+
                         mCounter++;
                     } catch (IOException e ) {
                         e.printStackTrace();
@@ -92,5 +120,16 @@ public class ReceiveThread extends Thread{
 
     public int getCounter() {
         return mCounter;
+    }
+    public int getReadCounter() {
+        return mReadCounter;
+    }
+
+    public void resetLog() {
+        synchronized(myLock) {
+            mByteCounter = 0;
+            mCounter = 0;
+            mReadCounter = 0;
+        }
     }
 }

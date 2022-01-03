@@ -194,6 +194,7 @@ public class MobileActivity extends AppCompatActivity {
                         currentMessage;
 
             }
+            mBluetoothService.resetCounterLog();
             vBinding.mobileCounterLog.setText(log);
 
         });
@@ -269,26 +270,26 @@ public class MobileActivity extends AppCompatActivity {
         Handler readerHandler = new Handler(mHandlerThread.getLooper()) {
             @Override
             public void handleMessage(@NonNull Message msg) {
-                Log.d(
+            /*    Log.d(
                         "MainActivity",
                         "handleMessage " + msg.what + " in " +
                                 (msg.obj != null)
-                );
+                );*/
                 if (msg.what == ReceiveThread.MESSAGE_READ) {
-                    Log.d(
+                    /*Log.d(
                             "MainActivity",
                             "handleMessage in"
-                    );
+                    );*/
                     Object objData = msg.obj;
 
                     if (objData != null) {
-                        Log.i("mainActivity: ", "mCurrentMessage 2");
+//                        Log.i("mainActivity: ", "mCurrentMessage 2");
 
-                        byte[] readBuf = (byte[]) objData;
+                      /*  TODO uncomment byte[] readBuf = (byte[]) objData;
                         // construct a string from the valid bytes in the buffer
                         // construct a string from the valid bytes in the buffer
                         String readMessage = new String(readBuf, 0, msg.arg1);
-                        mCurrentMessage = readMessage;
+                        mCurrentMessage = readMessage;*/
                         mReadBytes += msg.arg1;
 
                     }

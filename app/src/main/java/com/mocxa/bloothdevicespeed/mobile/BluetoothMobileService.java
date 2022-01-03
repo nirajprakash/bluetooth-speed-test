@@ -276,22 +276,35 @@ public void setUpAccept() {
         long currentTime = System.currentTimeMillis();
 
         if (!mIsReceiving && mSenderThread != null) {
-            long timeDiff = (currentTime - mSenderThread.getStartTime()) / 1000;
+            long timeDiff = (currentTime - mSenderThread.getStartTime());
+            long byteCounter =  mSenderThread.getByteCounter();
             return " Sending:  \n" +
+                    "Rate: " +
+                    (byteCounter*1000)/timeDiff +
+                    " \n" +
                     "Period: " +
                     timeDiff  +
                     " \n" +
                     "Counter: " +
                     mSenderThread.getCounter() +
+                    "  " +
+                    mSenderThread.getByteCounter() +
                     " \n";
         } else if (mReceiverService != null) {
-            long timeDiff = (currentTime - mReceiverService.getStartTime()) / 1000;
+            long timeDiff = (currentTime - mReceiverService.getStartTime()) ;
+            long byteCounter =  mReceiverService.getByteCounter();
             return " Receiving:  \n" +
+                    "Rate: " +
+                    (byteCounter*1000)/timeDiff +
+                    " \n" +
+
                     "Period: " +
                     timeDiff +
                     " \n" +
                     "Counter: " +
                     mReceiverService.getCounter() +
+                    "  " +
+                    mReceiverService.getReadCounter() +
                     " \n" +
                     "BytesCounter: " +
                     mReceiverService.getByteCounter() +
@@ -301,4 +314,13 @@ public void setUpAccept() {
 
     }
 
+    public void resetCounterLog() {
+        if(mSenderThread!=null){
+            mSenderThread.resetLog();
+        }
+
+        if(mReceiverService!=null){
+            mReceiverService.resetLog();
+        }
+    }
 }
