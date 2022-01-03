@@ -7,3 +7,6 @@
 # blocking send
 
 - https://stackoverflow.com/questions/12354643/android-bluetoothsocket-outputstream-write-blocks-infinitely
+
+# write flush
+- https://stackoverflow.com/questions/12307423/bluetoothsocket-stops-transmitting-on-outputstream-write
