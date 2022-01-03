@@ -275,14 +275,13 @@ public class BluetoothDeviceService {
     }
 
     public void stopChat() {
-        if (mIsReceiving) {
             if (mReceiverService != null) {
                 mReceiverService.toggleConnected(false);
                 mReceiverService.interrupt();
             }
 
             clearReceiver();
-        } else {
+
 
             if (mDeviceSender != null) {
                 mDeviceSender.toggleConnected(false);
@@ -290,7 +289,13 @@ public class BluetoothDeviceService {
             }
 
             clearSender();
+
+        if(mPeriodicSender!=null){
+            mPeriodicSender.cancel();
+            mPeriodicSender = null;
         }
+
+
     }
 
     public String getCounterLog() {

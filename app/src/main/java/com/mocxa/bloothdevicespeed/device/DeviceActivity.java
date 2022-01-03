@@ -187,6 +187,8 @@ public class DeviceActivity extends AppCompatActivity {
                         currentMessage;
 
             }
+            Log.i("mainActivity: ", log);
+
             mBluetoothService.resetCounterLog();
             vBinding.deviceCounterLog.setText(log);
 
