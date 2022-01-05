@@ -43,11 +43,11 @@ public class ConnectThread extends Thread{
         try {
             tmp = mIsSecure ?
                     mDevice.createRfcommSocketToServiceRecord(
-                            BluetoothConstants.MY_UUID_SECURE
+                            BluetoothConstants.MY_UUID
                     )
                     :
                     mDevice.createInsecureRfcommSocketToServiceRecord(
-                            BluetoothConstants.MY_UUID_INSECURE
+                            BluetoothConstants.MY_UUID
                     );
 
         } catch (IOException e) {

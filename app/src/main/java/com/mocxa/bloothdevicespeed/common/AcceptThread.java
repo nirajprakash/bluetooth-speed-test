@@ -55,11 +55,11 @@ public class AcceptThread extends Thread {
             tmp = mIsSecure ?
                     mAdapter.listenUsingRfcommWithServiceRecord(
                             NAME_SECURE,
-                            BluetoothConstants.MY_UUID_SECURE
+                            BluetoothConstants.MY_UUID
                     )
                     :
                     mAdapter.listenUsingInsecureRfcommWithServiceRecord(
-                            NAME_INSECURE, BluetoothConstants.MY_UUID_INSECURE
+                            NAME_INSECURE, BluetoothConstants.MY_UUID
                     );
 
         } catch (IOException e) {

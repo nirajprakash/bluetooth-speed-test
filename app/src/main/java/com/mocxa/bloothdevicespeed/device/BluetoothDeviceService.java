@@ -15,6 +15,7 @@ import com.mocxa.bloothdevicespeed.common.AcceptThread;
 import com.mocxa.bloothdevicespeed.common.ConnectThread;
 import com.mocxa.bloothdevicespeed.common.InfiniteSenderThread;
 import com.mocxa.bloothdevicespeed.common.ReceiveThread;
+import com.mocxa.bloothdevicespeed.tools.UtilLogger;
 import com.mocxa.bloothdevicespeed.tools.livedata.LiveDataEvent;
 
 import java.util.TimerTask;
@@ -24,6 +25,7 @@ import java.util.TimerTask;
  */
 public class BluetoothDeviceService {
 
+    private UtilLogger log = UtilLogger.with(this);
     private BluetoothSocket mSocket = null;
     BluetoothAdapter mAdapter;
     Handler mReadHandler;
@@ -145,7 +147,7 @@ public class BluetoothDeviceService {
 
     private void setUpConnect(BluetoothDevice device) {
         if (mConnectThread == null && mAdapter != null) {
-            mConnectThread = new ConnectThread(device, true);
+            mConnectThread = new ConnectThread(device, false);
             mEventErrorMessageMediator.addSource(this.mConnectThread.mEventErrorMessage, stringLiveDataEvent -> {
                 _mEventErrorMessage.postValue(stringLiveDataEvent);
 
@@ -211,22 +213,65 @@ public class BluetoothDeviceService {
 
         new Handler(mSendThread.getLooper()).post(() -> {
 
-            mDeviceSender.sendMessage(DeviceCommands.INITIAL_HEART_BEAT);
-            mDeviceSender.sendMessage(DeviceCommands.HEART_BEAT);
+            String message = DeviceCommands.INITIAL_HEART_BEAT;
+            mDeviceSender.sendMessage(message);
+            log.i("SendSetup :  "+ message);
 
-            mDeviceSender.sendMessage(DeviceCommands.deciData1());
-            mDeviceSender.sendMessage(DeviceCommands.deciData2());
-            mDeviceSender.sendMessage(DeviceCommands.deciData3());
-            mDeviceSender.sendMessage(DeviceCommands.deciData4());
-            mDeviceSender.sendMessage(DeviceCommands.deciData5());
-            mDeviceSender.sendMessage(DeviceCommands.deciData6());
-            mDeviceSender.sendMessage(DeviceCommands.deciData7());
-            mDeviceSender.sendMessage(DeviceCommands.deciData8());
-            mDeviceSender.sendMessage(DeviceCommands.deciData9());
-            mDeviceSender.sendMessage(DeviceCommands.deciData10());
-            mDeviceSender.sendMessage(DeviceCommands.deciData11());
+            message = DeviceCommands.HEART_BEAT;
+            mDeviceSender.sendMessage(message);
+            log.i("SendSetup :  "+ message);
 
-            mDeviceSender.sendMessage(DeviceCommands.END_ONGOING);
+            message = DeviceCommands.deciData1();
+            mDeviceSender.sendMessage(message);
+            log.i("SendSetup deci1:  "+ message);
+
+
+            message = DeviceCommands.deciData2();
+            mDeviceSender.sendMessage(message);
+            log.i("SendSetup deci2:  "+ message);
+
+            message = DeviceCommands.deciData3();
+            mDeviceSender.sendMessage(message);
+            log.i("SendSetup deci3:  "+ message);
+
+            message = DeviceCommands.deciData4();
+            mDeviceSender.sendMessage(message);
+            log.i("SendSetup deci4:  "+ message);
+
+            message = DeviceCommands.deciData5();
+            mDeviceSender.sendMessage(message);
+            log.i("SendSetup deci5:  "+ message);
+
+            message = DeviceCommands.deciData6();
+            mDeviceSender.sendMessage(message);
+            log.i("SendSetup deci6:  "+ message);
+
+
+            message = DeviceCommands.deciData7();
+            mDeviceSender.sendMessage(message);
+            log.i("SendSetup deci7:  "+ message);
+
+            message = DeviceCommands.deciData8();
+            mDeviceSender.sendMessage(message);
+            log.i("SendSetup deci8:  "+ message);
+
+            message = DeviceCommands.deciData9();
+            mDeviceSender.sendMessage(message);
+            log.i("SendSetup deci9:  "+ message);
+
+            message = DeviceCommands.deciData10();
+            mDeviceSender.sendMessage(message);
+            log.i("SendSetup deci10:  "+ message);
+
+            message = DeviceCommands.deciData11();
+            mDeviceSender.sendMessage(message);
+            log.i("SendSetup deci11:  "+ message);
+
+
+            message = DeviceCommands.END_ONGOING;
+            mDeviceSender.sendMessage(message);
+            log.i("SendSetup end:  "+ message);
+
         });
 
 

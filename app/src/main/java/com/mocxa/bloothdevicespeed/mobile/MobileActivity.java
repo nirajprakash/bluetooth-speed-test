@@ -27,6 +27,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mocxa.bloothdevicespeed.BluetoothConstants;
 import com.mocxa.bloothdevicespeed.common.ReceiveThread;
 import com.mocxa.bloothdevicespeed.databinding.ActivityMobileBinding;
+import com.mocxa.bloothdevicespeed.tools.UtilLogger;
 import com.mocxa.bloothdevicespeed.tools.livedata.LiveDataObserver;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
 
 public class MobileActivity extends AppCompatActivity {
 
+    private UtilLogger log = UtilLogger.with(this);
 
     private String mCurrentMessage = null;
     private int mReadBytes = 0;
@@ -181,21 +183,22 @@ public class MobileActivity extends AppCompatActivity {
         });
 
         vBinding.mobileCounter.setOnClickListener(v -> {
-            String log  =  mBluetoothService.getCounterLog();
+            String logStr  =  mBluetoothService.getCounterLog();
 
             String currentMessage = mCurrentMessage;
             int readBytes = mReadBytes;
             if(currentMessage!=null){
                 Log.i("mainActivity: ", "mCurrentMessage 1");
-                log = log +
+                logStr = logStr +
                         "  \n readBytesCounter: " +
                         readBytes +
                         " \n last message: " +
                         currentMessage;
 
             }
+            log.i(logStr);
             mBluetoothService.resetCounterLog();
-            vBinding.mobileCounterLog.setText(log);
+            vBinding.mobileCounterLog.setText(logStr);
 
         });
 

@@ -31,6 +31,7 @@ import com.mocxa.bloothdevicespeed.databinding.ActivityDeviceBinding;
 import com.mocxa.bloothdevicespeed.databinding.ActivityMobileBinding;
 import com.mocxa.bloothdevicespeed.mobile.BluetoothMobileService;
 import com.mocxa.bloothdevicespeed.mobile.MobileActivity;
+import com.mocxa.bloothdevicespeed.tools.UtilLogger;
 import com.mocxa.bloothdevicespeed.tools.livedata.LiveDataObserver;
 
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DeviceActivity extends AppCompatActivity {
+    private UtilLogger log = UtilLogger.with(this);
     private String mCurrentMessage = null;
     private int mReadBytes = 0;
     private int mSelectedDeviceIndex = -1;
@@ -174,23 +176,24 @@ public class DeviceActivity extends AppCompatActivity {
         });
 
         vBinding.deviceCounter.setOnClickListener(v -> {
-            String log  =  mBluetoothService.getCounterLog();
+            String logStr  =  mBluetoothService.getCounterLog();
 
             String currentMessage = mCurrentMessage;
             int readBytes = mReadBytes;
             if(currentMessage!=null){
                 Log.i("mainActivity: ", "mCurrentMessage 1");
-                log = log +
+                logStr = logStr +
                         "  \n readBytesCounter: " +
                         readBytes +
                         " \n last message: " +
                         currentMessage;
 
             }
-            Log.i("mainActivity: ", log);
+//            Log.i("mainActivity: ", logStr);
 
+            log.i(logStr);
             mBluetoothService.resetCounterLog();
-            vBinding.deviceCounterLog.setText(log);
+            vBinding.deviceCounterLog.setText(logStr);
 
         });
 
@@ -378,7 +381,7 @@ public class DeviceActivity extends AppCompatActivity {
         if(mBluetoothAdapter==null){
             return;
         }
-        Log.i("MainActivity","connectDevice: $device");
+        log.i("connect Device: "+ device);
         BluetoothDevice btDevice = mBluetoothAdapter.getRemoteDevice(device.getAddress());
         // Attempt to connect to the device
         // Attempt to connect to the device

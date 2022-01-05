@@ -96,7 +96,7 @@ public class BluetoothMobileService {
 public void setUpAccept() {
 
         if (mSecureAcceptThread == null && mAdapter != null) {
-            mSecureAcceptThread = new AcceptThread(mAdapter, true);
+            mSecureAcceptThread = new AcceptThread(mAdapter, false);
             mEventErrorMessageMediator.addSource(this.mSecureAcceptThread.mEventErrorMessage, stringLiveDataEvent -> {
                 _mEventErrorMessage.postValue(stringLiveDataEvent);
 
@@ -149,7 +149,7 @@ public void setUpAccept() {
 
     private void setUpConnect(BluetoothDevice device) {
         if (mConnectThread == null && mAdapter != null) {
-            mConnectThread = new ConnectThread(device, true);
+            mConnectThread = new ConnectThread(device, false);
             mEventErrorMessageMediator.addSource(this.mConnectThread.mEventErrorMessage, stringLiveDataEvent -> {
                 _mEventErrorMessage.postValue(stringLiveDataEvent);
 
