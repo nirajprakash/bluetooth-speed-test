@@ -169,10 +169,11 @@ public class DeviceActivity extends AppCompatActivity {
             mBluetoothService.startEEG();
         });
 
-        vBinding.deviceChatToggle.setOnClickListener(v -> {
-            mBluetoothService.stopChat();
+        vBinding.deviceStop.setOnClickListener(v -> {
+            mBluetoothService.stopEEG();
+/*            mBluetoothService.stopChat();
             mReadBytes = 0;
-            mCurrentMessage = null;
+            mCurrentMessage = null;*/
         });
 
         vBinding.deviceCounter.setOnClickListener(v -> {

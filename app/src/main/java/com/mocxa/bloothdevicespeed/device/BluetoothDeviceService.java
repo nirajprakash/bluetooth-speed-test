@@ -168,7 +168,6 @@ public class BluetoothDeviceService {
 
     private boolean setupReceiver() {
         clearReceiver();
-        clearSender();
         mIsReceiving = true;
         if (mSocket != null) {
             Log.i("Bluetooth Service: ", "setupReceiver");
@@ -190,7 +189,6 @@ public class BluetoothDeviceService {
 
     private boolean setupSender() {
         clearSender();
-        clearReceiver();
         if (mSocket != null) {
             Log.i("Bluetooth Service: ", "setupSender");
 
@@ -300,8 +298,9 @@ public class BluetoothDeviceService {
 
 
     private void clearSender() {
-        if (mDeviceSender != null)
+        if (mDeviceSender != null) {
             mDeviceSender.interrupt();
+        }
 //        mReceiverService?.let { mEventErrorMessage.removeSource(it.mEventErrorMessage) }
         mDeviceSender = null;
 
@@ -391,6 +390,19 @@ public class BluetoothDeviceService {
                     periodicSend();
                 }
             };
+
+        });
+
+
+    }
+
+    public void stopEEG() {
+
+
+        new Handler(mSendThread.getLooper()).post(() -> {
+            mDeviceSender.sendMessage(DeviceCommands.STOP);
+            stopChat();
+
 
         });
 

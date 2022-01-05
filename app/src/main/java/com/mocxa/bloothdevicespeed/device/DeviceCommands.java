@@ -16,6 +16,7 @@ public class DeviceCommands {
     public static String HEART_BEAT = "28,32,32,104,13";
     public static String TRANSMISSION = "28,32,32,119,32,48,101,13,10";
     public static String END_ONGOING = "28,32,32,119,32,38,33,13";
+    public static String STOP = "28,32,32,119,32,48,32,13,10";
     public static int channel_nos = 24;
 
 

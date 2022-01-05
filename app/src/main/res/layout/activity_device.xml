@@ -147,7 +147,7 @@
             android:layout_height="16dp" />
         <Button
 
-            android:id="@+id/device_chat_toggle"
+            android:id="@+id/device_stop"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Stop Chat" />
