@@ -18,6 +18,7 @@ import com.mocxa.bloothdevicespeed.common.ReceiveThread;
 import com.mocxa.bloothdevicespeed.tools.UtilLogger;
 import com.mocxa.bloothdevicespeed.tools.livedata.LiveDataEvent;
 
+import java.util.Timer;
 import java.util.TimerTask;
 
 /**
@@ -29,6 +30,7 @@ public class BluetoothDeviceService {
     private BluetoothSocket mSocket = null;
     BluetoothAdapter mAdapter;
     Handler mReadHandler;
+    public Timer timer = new Timer();
 
     private AcceptThread mSecureAcceptThread = null;
 
@@ -382,14 +384,23 @@ public class BluetoothDeviceService {
 
 
         new Handler(mSendThread.getLooper()).post(() -> {
-            mDeviceSender.sendMessage(DeviceCommands.INITIAL_HEART_BEAT);
-            mDeviceSender.sendMessage(DeviceCommands.HEART_BEAT);
+            String message = DeviceCommands.INITIAL_HEART_BEAT;
+            mDeviceSender.sendMessage(message);
+            log.i("startEEG initial:  "+ message);
+
+
+            message = DeviceCommands.HEART_BEAT;
+            mDeviceSender.sendMessage(message);
+            log.i("startEEG HEART_BEAT:  "+ message);
+
+
             mPeriodicSender = new TimerTask() {
                 @Override
                 public void run() {
                     periodicSend();
                 }
             };
+            timer.schedule(mPeriodicSender, 0l, 1000 * 1 * 1);
 
         });
 
