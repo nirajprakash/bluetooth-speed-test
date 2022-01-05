@@ -339,6 +339,7 @@ public class BluetoothDeviceService {
         if(mPeriodicSender!=null){
             mPeriodicSender.cancel();
             mPeriodicSender = null;
+            timer.cancel();
         }
 
 
