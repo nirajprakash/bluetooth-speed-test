@@ -1,0 +1,133 @@
+package com.mocxa.bloothdevicespeed.device2;
+
+import android.bluetooth.BluetoothSocket;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Message;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+/**
+ * Created by Niraj on 03-01-2022.
+ */
+public class Device2SenderThread extends Thread {
+
+    private static final int MESSAGE_SEND = 487;
+    BluetoothSocket mSocket;
+
+    private OutputStream mOutputStream = null;
+    private AtomicBoolean mIsConnected = new AtomicBoolean(false);
+
+    private ConcurrentLinkedQueue<String> mSendMessagesQueue = new ConcurrentLinkedQueue<>();
+
+    final Object myLock = new Object();
+
+    long mStartTime = System.currentTimeMillis();
+    int mCounterLog = 0;
+
+
+// TODO   HandlerThread mHandlerThread = null;
+// TODO  private Handler mReaderHandler;
+
+    private Device2Gate mDevice2Gate;
+
+
+    public Device2SenderThread(BluetoothSocket pSocket, Device2Gate device2Gate) {
+        mSocket = pSocket;
+        try {
+            mOutputStream = mSocket.getOutputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mDevice2Gate  = device2Gate;
+
+    }
+
+
+    @Override
+    public void run() {
+        while (!isInterrupted()) {
+            if (mDevice2Gate.getWriteActive().get()) {
+                synchronized (mDevice2Gate.getMyLock()){
+
+                    // TODO add check for ack and nack
+
+                    if(!(mDevice2Gate.getAck().get() & mDevice2Gate.getNack().get())){
+                        String pollMessage = mSendMessagesQueue.peek();
+                        if(pollMessage!=null){
+                            write(pollMessage);
+                            mCounterLog++;
+                        }else{
+                            mDevice2Gate.holdWrite();
+                        }
+                    }else{
+                        mDevice2Gate.holdWrite();
+                    }
+
+                }
+            }
+
+        }
+
+    }
+
+    public void sendMessage(String message){
+        synchronized (myLock){
+            mSendMessagesQueue.add(message);
+
+        }
+/*        if(mReaderHandler!=null){
+            mReaderHandler.obtainMessage(MESSAGE_SEND, -1, -1 , message).sendToTarget();
+        }*/
+    }
+
+    private void write(String buffer){
+        String[] buffers = buffer.split(",");
+        int[] inum = new int[buffers.length];
+        int i = 0;
+        for (String bufferss : buffers) {
+            inum[i] = Integer.parseInt(bufferss);
+            i++;
+        }
+
+        char[] test1 = new char[inum.length];
+        for (int j = 0; j < inum.length; j++) {
+            test1[j] = (char) inum[j];
+        }
+
+        char[] test = test1;
+        byte[] by = new byte[test.length];
+        for (int k = 0; k < test.length; k++) {
+//            TODO not used outputStream1.write(test[k]);
+            by[k] = (byte) test[k];
+        }
+        try {
+            mOutputStream.write(by);
+            mOutputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void toggleConnected(boolean isConnected) {
+        mIsConnected.compareAndSet(!isConnected, isConnected);
+        Log.i("SenderService: ", "toggleConnected: ${mIsConnected.get()}");
+    }
+
+    /*public void interrupt(){
+        if(mHandlerThread!=null && !mHandlerThread.isInterrupted()){
+            mHandlerThread.interrupt();
+        }
+
+    }*/
+
+
+
+
+}
