@@ -22,6 +22,10 @@ public class Device2Gate {
     private long mTimerStart = System.currentTimeMillis();
     private long mWriteStartTime = System.currentTimeMillis();
 
+    int mAckCounterLog = 0;
+    int mNackCounterLog = 0;
+    int mNackCallCounterLog = 0;
+
 
     public void holdRead() {
         synchronized (mMyLock) {
@@ -54,16 +58,24 @@ public class Device2Gate {
         }
     }
 
-    public void acknowledge(){
-        synchronized (mMyLock){
-            mAck.compareAndSet(false, true);
+    public void acknowledge() {
+        synchronized (mMyLock) {
+            if (mAck.compareAndSet(false, true)) {
+                mAckCounterLog++;
+            }
         }
 
     }
 
-    public void setError(boolean hasError){
+    public void setError(boolean hasError) {
         synchronized (mMyLock) {
-            mNack.compareAndSet(!hasError, hasError);
+
+            if (mNack.compareAndSet(!hasError, hasError)) {
+                if (hasError) {
+                    mNackCounterLog++;
+                }
+            }
+            mNackCallCounterLog++;
         }
     }
 
@@ -107,6 +119,16 @@ public class Device2Gate {
     private void enableWrite(long currentTime) {
         if (mWriteActive.compareAndSet(false, true)) {
             mWriteStartTime = currentTime;
+
+        }
+    }
+
+
+    public void resetLog() {
+        synchronized (mMyLock) {
+            mAckCounterLog = 0;
+            mNackCounterLog = 0;
+            mNackCallCounterLog = 0;
         }
     }
 

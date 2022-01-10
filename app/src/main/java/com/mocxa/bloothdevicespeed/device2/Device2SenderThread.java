@@ -30,6 +30,7 @@ public class Device2SenderThread extends Thread {
 
     long mStartTime = System.currentTimeMillis();
     int mCounterLog = 0;
+     int mWriteCounterLog = 0;
 
 
 // TODO   HandlerThread mHandlerThread = null;
@@ -54,6 +55,7 @@ public class Device2SenderThread extends Thread {
     public void run() {
         while (!isInterrupted()) {
             if (mDevice2Gate.getWriteActive().get()) {
+
                 synchronized (mDevice2Gate.getMyLock()){
 
                     // TODO add check for ack and nack
@@ -62,7 +64,7 @@ public class Device2SenderThread extends Thread {
                         String pollMessage = mSendMessagesQueue.peek();
                         if(pollMessage!=null){
                             write(pollMessage);
-                            mCounterLog++;
+                            mWriteCounterLog++;
                         }else{
                             mDevice2Gate.holdWrite();
                         }
@@ -71,6 +73,7 @@ public class Device2SenderThread extends Thread {
                     }
 
                 }
+                mCounterLog++;
             }
 
         }
@@ -127,7 +130,12 @@ public class Device2SenderThread extends Thread {
 
     }*/
 
-
+    public void resetLog() {
+        synchronized (myLock) {
+            mCounterLog = 0;
+            mWriteCounterLog = 0;
+        }
+    }
 
 
 }
