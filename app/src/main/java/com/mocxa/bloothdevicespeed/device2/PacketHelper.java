@@ -358,7 +358,8 @@ public class PacketHelper {
 
     public static ModelPacket processBuffer(byte[] databuf, int channel_nos, byte[] eegSpecialPacket,
                                             boolean prevEegSpecialpacketStatus,
-                                            int prevPartialPacketFirstPartLength, int prevPartialPacketLastPartLength) {
+                                            int prevPartialPacketFirstPartLength,
+                                            int prevPartialPacketLastPartLength) {
 
         ModelPacket modelPacket = new ModelPacket();
         List<int[]> eegGraphPacketList = new ArrayList<>();

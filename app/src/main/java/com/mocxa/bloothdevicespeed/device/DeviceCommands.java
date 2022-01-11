@@ -24,9 +24,9 @@ public class DeviceCommands {
 
         int NoOfChnls=channel_nos;
         int N=channel_nos;
-        String nonacsii = " ";         //1 byte
+        String nonacsii = "ÿ";         //1 byte
         String company = "BIOSEMI";     //2-8
-        String patient_id = "Patient1"; // 80
+        String patient_id = "Anonymous Patient"; // 80
 
         //current date:
 
@@ -36,7 +36,7 @@ public class DeviceCommands {
         SimpleDateFormat df = new SimpleDateFormat("dd.MM.yy", Locale.getDefault());
         String formattedDate = df.format(c);
         Log.i("Mocxa", "Current Date: "+formattedDate);
-        String patient_record = "Recording no."+ formattedDate; //80
+        String patient_record = "Recording no."+ "1"; //80
 
         String strartDate = formattedDate; //8
 
@@ -48,7 +48,7 @@ public class DeviceCommands {
 
         String strartTime = formattedTime;//8
         //String no_of_bytes = "        "; //8
-        String no_of_bytes = Integer.toString((N+1)*256)+"      "; //8
+        String no_of_bytes = Integer.toString((N+1)*256)+"    "; //8
         String version = "24BIT"; //44
         String no_of_record = "0";//8
         String duration_of_records = "1";//8
@@ -57,7 +57,7 @@ public class DeviceCommands {
         // String no_of_samples = "2048";//68*8
 
         StringBuilder sb2 = new StringBuilder();
-        sb2.append(nonacsii).append(company).append(emptySpaces80(patient_id)).append(emptySpaces8(patient_record)).append(emptySpaces8(strartDate));
+        sb2.append(nonacsii).append(company).append(emptySpaces80(patient_id)).append(emptySpaces80(patient_record)).append(emptySpaces8(strartDate));
         sb2.append(emptySpaces8(strartTime)).append(no_of_bytes).append(emptySpaces44(version)).append(emptySpaces8(no_of_record)).append(emptySpaces8(duration_of_records)).append(no_of_channels);
         // LiveGraphActivity obj= new LiveGraphActivity();
         String data1 = sb2.toString();

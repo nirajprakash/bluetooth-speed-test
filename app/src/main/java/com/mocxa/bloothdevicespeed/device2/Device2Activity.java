@@ -31,6 +31,7 @@ import com.mocxa.bloothdevicespeed.device.DeviceActivity;
 import com.mocxa.bloothdevicespeed.tools.UtilLogger;
 import com.mocxa.bloothdevicespeed.tools.livedata.LiveDataObserver;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -99,10 +100,10 @@ public class Device2Activity extends AppCompatActivity {
                 // When discovery is finished, change the Activity title
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
 
-                if(isAlreadySearched){
+                if (isAlreadySearched) {
 
                     isAlreadySearched = false;
-                }else{
+                } else {
                     if (mNewDevicesArrayAdapter.size() == 0) {
                         Toast.makeText(
                                 Device2Activity.this,
@@ -115,7 +116,7 @@ public class Device2Activity extends AppCompatActivity {
                         vBinding.device2SearchLog.setText("Search compete");
                         showDialogResolutionSelect();
                     }
-                    if(mBluetoothAdapter!=null){
+                    if (mBluetoothAdapter != null) {
                         isAlreadySearched = true;
                         mBluetoothAdapter.cancelDiscovery();
                     }
@@ -142,7 +143,7 @@ public class Device2Activity extends AppCompatActivity {
         });
 
         vBinding.device2SearchCancel.setOnClickListener(v -> {
-            Log.i("MainActivity","blSearchCancel: " );
+            Log.i("MainActivity", "blSearchCancel: ");
             if (mBluetoothAdapter.isDiscovering()) {
                 mBluetoothAdapter.cancelDiscovery();
             }
@@ -172,11 +173,11 @@ public class Device2Activity extends AppCompatActivity {
         });
 
         vBinding.device2Counter.setOnClickListener(v -> {
-            String logStr  =  mBluetoothService.getCounterLog();
+            String logStr = mBluetoothService.getCounterLog();
 
             String currentMessage = mCurrentMessage;
             int readBytes = mReadBytes;
-            if(currentMessage!=null){
+            if (currentMessage != null) {
                 Log.i("mainActivity: ", "mCurrentMessage 1");
                 logStr = logStr +
                         "  \n readBytesCounter: " +
@@ -241,7 +242,7 @@ public class Device2Activity extends AppCompatActivity {
         try {
             // Unregister broadcast listeners
             this.unregisterReceiver(mReceiver);
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
 
@@ -249,13 +250,14 @@ public class Device2Activity extends AppCompatActivity {
 
     private void setupBluetooth() {
 
-        Log.i("MainActivity: ","setupBluetooth");
+        Log.i("MainActivity: ", "setupBluetooth");
 
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         mBluetoothAdapter = bluetoothManager.getAdapter();
 
 
     }
+
     private void setupBluetoothService() {
         Log.i("mainActivity: ", "onStart 4");
 
@@ -285,6 +287,16 @@ public class Device2Activity extends AppCompatActivity {
                         String readMessage = new String(readBuf, 0, msg.arg1);
                         mCurrentMessage = readMessage;*/
                         mReadBytes += msg.arg1;
+                        ByteArrayOutputStream byteArrayOutputStream = (ByteArrayOutputStream) msg.obj;
+                        byte[] readBuf = byteArrayOutputStream.toByteArray();
+
+                        //lastMessage = new String(readBuf, 0, msg.arg1);
+
+                        if (readBuf != null && mBluetoothService != null) {
+                            Log.d("Live Graph", "");
+                            mBluetoothService.onBytes(readBuf);
+//                            packetQueue.add(readBuf);
+                        }
 
                     }
                 }
@@ -322,6 +334,30 @@ public class Device2Activity extends AppCompatActivity {
             ).show();
             vBinding.device2ConnectLog.setText("Connected");
         }));
+
+        mBluetoothService.mEventNackError.observe(this, new LiveDataObserver<String>(
+                data -> {
+
+                    if(data!=null){
+                        showDialogNackError(data);
+                    }
+
+                }
+        ));
+
+        mBluetoothService.mEventMessage.observe(this, new LiveDataObserver<String>(
+                data -> {
+
+                    if(data!=null){
+                        Toast.makeText(
+                                Device2Activity.this, data,
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                    }
+
+                }
+        ));
     }
 
 
@@ -374,10 +410,10 @@ public class Device2Activity extends AppCompatActivity {
     }
 
     private void connectDevice(BluetoothDevice device) {
-        if(mBluetoothAdapter==null){
+        if (mBluetoothAdapter == null) {
             return;
         }
-        log.i("connect Device: "+ device);
+        log.i("connect Device: " + device);
         BluetoothDevice btDevice = mBluetoothAdapter.getRemoteDevice(device.getAddress());
         // Attempt to connect to the device
         // Attempt to connect to the device
@@ -413,11 +449,11 @@ public class Device2Activity extends AppCompatActivity {
         // Get a set of currently paired devices
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
 
-        if(pairedDevices!=null){
+        if (pairedDevices != null) {
 
             mNewDevicesArrayAdapter.addAll(pairedDevices);
 
-            vBinding.device2PairedLog.setText("Paired Device: "+ pairedDevices.size());
+            vBinding.device2PairedLog.setText("Paired Device: " + pairedDevices.size());
 
         }
 
@@ -429,7 +465,7 @@ public class Device2Activity extends AppCompatActivity {
      * Start device discover with the BluetoothAdapter
      */
     private void doDiscovery() {
-        if(mBluetoothAdapter==null){
+        if (mBluetoothAdapter == null) {
             return;
         }
         // If we're already discovering, stop it
@@ -440,5 +476,29 @@ public class Device2Activity extends AppCompatActivity {
 
         // Request discover from BluetoothAdapter
         mBluetoothAdapter.startDiscovery();
+    }
+
+    /* ***********************************************************************************
+     *
+     */
+
+    public void showDialogNackError(String message) {
+
+        new MaterialAlertDialogBuilder(this).
+                setMessage(message)
+                .setPositiveButton("Retry",
+                        (dialog, which) -> {
+                            log.d("showDialogNackError retry: ");
+                            mBluetoothService.retrySend();
+                        })
+                .setNegativeButton("Stop",
+                        (dialog, which) -> {
+                            log.d("showDialogNackError stop ");
+                            mBluetoothService.stop();
+                            finish();
+                        })
+                .show();
+
+
     }
 }
