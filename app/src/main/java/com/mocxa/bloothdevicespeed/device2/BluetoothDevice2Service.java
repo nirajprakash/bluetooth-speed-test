@@ -19,6 +19,7 @@ import com.mocxa.bloothdevicespeed.tools.livedata.LiveDataEvent;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created by Niraj on 09-01-2022.
@@ -42,6 +43,8 @@ public class BluetoothDevice2Service {
 
     private boolean mTransmissionPacketSent = false;
 
+
+    ConcurrentLinkedQueue<byte[]> packetQueue = new ConcurrentLinkedQueue<byte[]>();
 
     private MutableLiveData<LiveDataEvent<String>> _mEventErrorMessage = new MutableLiveData<LiveDataEvent<String>>();
     MutableLiveData<LiveDataEvent<String>> mEventErrorMessage = _mEventErrorMessage;
@@ -444,4 +447,28 @@ public class BluetoothDevice2Service {
         setupSender();
         setupReceiver();
     }
+
+    /* *********************************************************************************
+     *                          Processing
+     */
+
+    private class ProcessingThread extends Thread {
+
+        int processingCounter = 0;
+        @Override
+        public void run() {
+            while (!isInterrupted()) {
+
+                byte[] databuf = packetQueue.poll();
+                if(databuf!=null){
+                    processingCounter++;
+//                   TODO PacketHelper.processBuffer(databuf, )
+
+                }
+//
+            }
+        }
+    }
+
+
 }
