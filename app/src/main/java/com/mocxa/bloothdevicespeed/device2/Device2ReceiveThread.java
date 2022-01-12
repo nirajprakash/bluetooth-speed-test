@@ -78,6 +78,8 @@ public class Device2ReceiveThread extends Thread {
                                     byteArrayOutputStream.write(buffer, writeOffset, bytes);
                                     writeOffset += bytes;
                                     availableBytes = mInputStream.available();
+
+                                    log.i( "ReceiverService run 6");
                                 }
                                 mByteCounter += byteLength;
                                 mReadCounter++;
