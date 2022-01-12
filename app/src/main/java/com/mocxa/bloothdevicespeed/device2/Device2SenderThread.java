@@ -88,7 +88,7 @@ public class Device2SenderThread extends Thread {
     public void sendMessage(String message){
         synchronized (myLock){
             mSendMessagesQueue.add(message);
-            log.i("send Message: "+ message);
+//            log.i("send Message: "+ message);
 
         }
 /*        if(mReaderHandler!=null){
@@ -118,7 +118,7 @@ public class Device2SenderThread extends Thread {
         }
         try {
             mOutputStream.write(by);
-            log.i("writing Message: ");
+            log.i("writing Message: "+ System.currentTimeMillis() + " ");
             mOutputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
