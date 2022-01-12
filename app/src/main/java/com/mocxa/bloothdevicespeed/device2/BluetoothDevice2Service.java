@@ -659,7 +659,7 @@ public class BluetoothDevice2Service {
                     if (packet.ackEvents.size() > 0) {
                         for (ModelPacketEventAck event : packet.ackEvents
                         ) {
-                            log.i("Ack event: " + event.getStatus());
+                            log.i("Ack event: " + System.currentTimeMillis() + " " + event.getStatus());
 
                         }
 
@@ -668,7 +668,7 @@ public class BluetoothDevice2Service {
                     if (packet.nackEvents.size() > 0) {
                         for (ModelPacketEventNack event : packet.nackEvents
                         ) {
-                            log.i("Nack event: " + event.getStatus());
+                            log.i("Nack event: " + System.currentTimeMillis() + " " + event.getStatus());
 
                         }
                     }
