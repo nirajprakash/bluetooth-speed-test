@@ -516,7 +516,7 @@ public class BluetoothDevice2Service {
                     periodicSend();
                 }
             };
-            timer.schedule(mPeriodicSender, 0l, 100 * 1 * 1);
+            timer.schedule(mPeriodicSender, 0l, 1000 * 1 * 1);
 
         });
 
