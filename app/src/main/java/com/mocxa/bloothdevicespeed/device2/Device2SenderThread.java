@@ -70,9 +70,10 @@ public class Device2SenderThread extends Thread {
     @Override
     public void run() {
         while (!isInterrupted()) {
+
             if (mDevice2Gate.getWriteActive().get()) {
 
-                synchronized (mDevice2Gate.getMyLock()){
+                //synchronized (mDevice2Gate.getMyLock()){
 
                     // TODO add check for ack and nack
 
@@ -90,8 +91,12 @@ public class Device2SenderThread extends Thread {
                         mDevice2Gate.holdWrite();
                     }
 
-                }
+
                 mCounterLog++;
+            }else{
+                if(mSendMessagesQueue.peek()!=null){
+                    mDevice2Gate.enableWrite();
+                }
             }
 
         }
@@ -132,6 +137,7 @@ public class Device2SenderThread extends Thread {
         try {
             if(writeMethodApproch == WRITE_METHOD_BUFFER){
                 mBufferedOutputStream.write(by);
+                mBufferedOutputStream.flush();
 //                log.i("writing Message 1: "+ System.currentTimeMillis() + " ");
 
 //               Doubt mBufferedOutputStream.flush();

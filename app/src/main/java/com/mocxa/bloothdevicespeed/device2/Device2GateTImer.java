@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by Niraj on 09-01-2022.
  */
-public class Device2Gate {
+public class Device2GateTImer {
 
 
     private UtilLogger log = UtilLogger.with(this);
@@ -20,10 +20,10 @@ public class Device2Gate {
 
     final Object mMyLock = new Object();
 
-//    private final long WRITE_MAX_PERIOD = 5L;
-//    private final long READ_MIN_PERIOD = 80L;
+    private final long WRITE_MAX_PERIOD = 5L;
+    private final long READ_MIN_PERIOD = 80L;
 
-    //    private final long TIMER_PERIOD = 100L;
+    private final long TIMER_PERIOD = 100L;
     private long mTimerStart = System.currentTimeMillis();
     private long mWriteStartTime = System.currentTimeMillis();
 
@@ -35,7 +35,7 @@ public class Device2Gate {
     int mWriteCounterLog = 0;
     long mReadPeriodLog = 0;
     long mWritePeriodLog = 0;
-//    private boolean mWriteNeeded = false;
+
 
 
     public void holdRead() {
@@ -43,30 +43,33 @@ public class Device2Gate {
             long currentTime = System.currentTimeMillis();
             long periodRead = currentTime - mTimerStart;
 
-//            if (periodRead > READ_MIN_PERIOD) {
-            if (mReadActive.compareAndSet(true, false)) {
-                mReadPeriodLog += periodRead;
-                log.i("hold Read");
-                enableWrite(currentTime);
+            if (periodRead > READ_MIN_PERIOD) {
+                if (mReadActive.compareAndSet(true, false)) {
+                    mReadPeriodLog += periodRead;
+                    log.i("hold Read");
+                    enableWrite(currentTime);
+                }
             }
-//            }
         }
     }
 
     public void enableRead() {
         synchronized (mMyLock) {
+            long currentTime = System.currentTimeMillis();
+            long timerPeriod = currentTime - mTimerStart;
+            if (timerPeriod >= TIMER_PERIOD) {
+                if (!mReadActive.get()) {
+                    holdWriteSilently();
+                    if (mReadActive.compareAndSet(false, true)) {
+                        mAck.compareAndSet(true, false);
+                        mReadCounterLog++;
+                        log.i("enable Read");
 
-            if (mWriteActive.get()) {
-                return;
+                        mTimerStart = System.currentTimeMillis();
+                    }
+                }
+
             }
-            if (mReadActive.compareAndSet(false, true)) {
-                mAck.compareAndSet(true, false);
-                mReadCounterLog++;
-                log.i("enable Read");
-
-                mTimerStart = System.currentTimeMillis();
-            }
-
 
         }
     }
@@ -116,31 +119,28 @@ public class Device2Gate {
         synchronized (mMyLock) {
             long currentTime = System.currentTimeMillis();
             long periodWrite = currentTime - mWriteStartTime;
-            if (mWriteActive.compareAndSet(true, false)) {
-                // TODO do some thing here
-                mWritePeriodLog += periodWrite;
-                log.i("hold Write");
+            if (periodWrite > WRITE_MAX_PERIOD) {
+                if (mWriteActive.compareAndSet(true, false)) {
+                    // TODO do some thing here
+                    mWritePeriodLog += periodWrite;
+                    log.i("hold Write");
 
+                }
             }
         }
     }
 
 
     private void holdWriteSilently() {
-        if (mWriteActive.compareAndSet(true, false)) {
+        if(mWriteActive.compareAndSet(true, false)){
             long currentTime = System.currentTimeMillis();
             long periodWrite = currentTime - mWriteStartTime;
 
             mWritePeriodLog += periodWrite;
         }
     }
-    public void enableWrite() {
-        enableWrite(System.currentTimeMillis());
-    }
+
     private void enableWrite(long currentTime) {
-        if (mReadActive.get()) {
-            return;
-        }
         if (mWriteActive.compareAndSet(false, true)) {
             mWriteStartTime = currentTime;
 //            log.i("enable Write");
@@ -156,22 +156,20 @@ public class Device2Gate {
             mNackCounterLog = 0;
             mNackCallCounterLog = 0;
 
-            mReadCounterLog = 0;
-            mWriteCounterLog = 0;
-            mReadPeriodLog = 0;
-            mWritePeriodLog = 0;
+            mReadCounterLog=0;
+            mWriteCounterLog=0;
+            mReadPeriodLog=0;
+            mWritePeriodLog=0;
         }
     }
 
-    public void logGate() {
-        log.i("Ack: " + mAckCounterLog + " Nack: " + mNackCounterLog + " Nack Call: " + mNackCallCounterLog);
-        log.i(" Read: " + mReadCounterLog + ", period: " + mReadPeriodLog + " Write: " + mWriteCounterLog + ", period: " + mWritePeriodLog);
+    public void logGate(){
+        log.i("Ack: "+ mAckCounterLog + " Nack: "+ mNackCounterLog +" Nack Call: "+ mNackCallCounterLog);
+        log.i(" Read: "+ mReadCounterLog+ ", period: "+ mReadPeriodLog + " Write: "+ mWriteCounterLog + ", period: "+ mWritePeriodLog );
     }
 
 
     public void clearAcknowledge() {
         mAck.compareAndSet(true, false);
     }
-
-
 }
