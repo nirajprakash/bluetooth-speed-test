@@ -358,7 +358,7 @@ public class Device2ReceiveThread extends Thread {
             mByteCounter += byteLength;
             mReadCounter++;
 
-            log.i("readByBufferPacketAvailable run 5" + System.currentTimeMillis() + " " + byteLength);
+//            log.i("readByBufferPacketAvailable run 5" + System.currentTimeMillis() + " " + byteLength);
             mReadHandler.obtainMessage(MESSAGE_READ, byteLength, -1,
                     byteArrayOutputStream).sendToTarget();
 
