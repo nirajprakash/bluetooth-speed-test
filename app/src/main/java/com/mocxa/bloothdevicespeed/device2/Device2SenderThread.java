@@ -67,7 +67,7 @@ public class Device2SenderThread extends Thread {
                         String pollMessage = mSendMessagesQueue.poll();
                         if(pollMessage!=null){
 
-                            log.i("writing Message: ");
+
                             write(pollMessage);
                             mWriteCounterLog++;
                         }else{
@@ -118,6 +118,7 @@ public class Device2SenderThread extends Thread {
         }
         try {
             mOutputStream.write(by);
+            log.i("writing Message: ");
             mOutputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();

@@ -271,7 +271,7 @@ public class Device2Activity extends AppCompatActivity {
                         "handleMessage " + msg.what + " in " +
                                 (msg.obj != null)
                 );*/
-                if (msg.what == ReceiveThread.MESSAGE_READ) {
+                if (msg.what == Device2ReceiveThread.MESSAGE_READ) {
                     /*Log.d(
                             "MainActivity",
                             "handleMessage in"
