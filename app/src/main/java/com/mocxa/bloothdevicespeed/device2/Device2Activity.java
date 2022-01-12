@@ -293,7 +293,7 @@ public class Device2Activity extends AppCompatActivity {
                         //lastMessage = new String(readBuf, 0, msg.arg1);
 
                         if (readBuf != null && mBluetoothService != null) {
-                            Log.d("Live Graph", "");
+//                            Log.d("Live Graph", "");
                             mBluetoothService.onBytes(readBuf);
 //                            packetQueue.add(readBuf);
                         }
