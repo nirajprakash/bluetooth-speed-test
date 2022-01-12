@@ -8,6 +8,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.mocxa.bloothdevicespeed.tools.UtilLogger;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -18,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class Device2SenderThread extends Thread {
 
+    private UtilLogger log = UtilLogger.with(this);
     private static final int MESSAGE_SEND = 487;
     BluetoothSocket mSocket;
 
@@ -61,8 +64,10 @@ public class Device2SenderThread extends Thread {
                     // TODO add check for ack and nack
 
                     if(!(mDevice2Gate.getAck().get() & mDevice2Gate.getNack().get())){
-                        String pollMessage = mSendMessagesQueue.peek();
+                        String pollMessage = mSendMessagesQueue.poll();
                         if(pollMessage!=null){
+
+                            log.i("writing Message: ");
                             write(pollMessage);
                             mWriteCounterLog++;
                         }else{
@@ -83,6 +88,7 @@ public class Device2SenderThread extends Thread {
     public void sendMessage(String message){
         synchronized (myLock){
             mSendMessagesQueue.add(message);
+            log.i("send Message: "+ message);
 
         }
 /*        if(mReaderHandler!=null){

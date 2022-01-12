@@ -32,7 +32,7 @@ public class DeviceCommands {
         //current date:
 
         Date c = Calendar.getInstance().getTime();
-        System.out.println("Current time => " + c);
+//        System.out.println("Current time => " + c);
 
         SimpleDateFormat df = new SimpleDateFormat("dd.MM.yy", Locale.getDefault());
         String formattedDate = df.format(c);
@@ -387,7 +387,7 @@ public class DeviceCommands {
             sb.append(hexString);
         }
         String result = sb.toString();
-        System.out.println(result);
+//        System.out.println(result);
         return result;
     }
 
@@ -403,7 +403,7 @@ public class DeviceCommands {
             sb1.append(hexString1+",");
         }
         String result = sb1.toString();
-        System.out.println(result);
+//        System.out.println(result);
         return result;
     }
 

@@ -336,6 +336,8 @@ public class BluetoothDevice2Service {
             if (mDevice2SenderThread != null) {
                 String nextMessage = mSetupQueue.peek();
                 if (nextMessage != null) {
+                    log.i("send Message Setup 1: ");
+
                     mDevice2SenderThread.sendMessage(nextMessage);
                 }
 
@@ -664,6 +666,7 @@ public class BluetoothDevice2Service {
 
                 byte[] databuf = mPacketQueue.poll();
                 if (databuf != null) {
+                    log.i("Processing  ");
                     mProcessingCounter++;
                     ModelPacket packet = PacketHelper.processBuffer(databuf,
                             DeviceCommands.channel_nos,
