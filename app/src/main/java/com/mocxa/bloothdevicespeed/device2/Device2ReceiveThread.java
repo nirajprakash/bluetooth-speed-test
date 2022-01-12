@@ -26,7 +26,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Device2ReceiveThread extends Thread {
 
     private static final int READ_METHOD_SIMPLE = 286;
-    private static final int READ_METHOD_AVAILABLE = 286;
+    private static final int READ_METHOD_ONE_BY_ONE = 288;
+    private static final int READ_METHOD_AVAILABLE = 296;
     private static final int READ_METHOD_BUFFER = 731;
     private static final int READ_METHOD_BUFFER_ONE_BY_ONE = 733;
     private static final int READ_METHOD_BUFFER_PACKET = 736;
@@ -53,7 +54,7 @@ public class Device2ReceiveThread extends Thread {
     private Device2Gate mDevice2Gate;
 
 
-    int readMethodApproch = READ_METHOD_SIMPLE;
+    int readMethodApproch = READ_METHOD_ONE_BY_ONE;
 
     public Device2ReceiveThread(BluetoothSocket pSocket, Handler pReadHandler, Device2Gate device2Gate) {
         mReadHandler = pReadHandler;
@@ -98,12 +99,12 @@ public class Device2ReceiveThread extends Thread {
 
                             if (readMethodApproch == READ_METHOD_SIMPLE) {
                                 readBySimple();
-                            } else if (readMethodApproch == READ_METHOD_AVAILABLE) {
+                            } else if(readMethodApproch == READ_METHOD_ONE_BY_ONE) {
+                                readByOneByOne();
+                            }else if (readMethodApproch == READ_METHOD_AVAILABLE) {
                                 readByAvailable();
-
                             } else if (readMethodApproch == READ_METHOD_BUFFER) {
                                 readByBuffer();
-
                             } else if (readMethodApproch == READ_METHOD_BUFFER_ONE_BY_ONE) {
                                 readByBufferOneByOne();
                             } else if (readMethodApproch == READ_METHOD_BUFFER_PACKET) {
@@ -170,11 +171,12 @@ public class Device2ReceiveThread extends Thread {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(Math.max(availableBytes, DEFAULT_BUFFER_SIZE));
             //inputStream.read();
 
-            // bytes = inputStream.read(buffer);
+//              mInputStream.read(buffer);
             int bytes = mInputStream.read(buffer, 0, availableBytes);
 
 
             if (bytes > 0) {
+//                byteArrayOutputStream.write(2);
                 byteArrayOutputStream.write(buffer, 0, bytes);
                 mByteCounter += bytes;
                 mReadCounter++;
@@ -187,6 +189,48 @@ public class Device2ReceiveThread extends Thread {
         } else {
             mDevice2Gate.holdRead();
         }
+    }
+
+    void readByOneByOne() throws IOException {
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(DEFAULT_BUFFER_SIZE);
+        int byteLength = 0;
+        int byteInt;
+//        int zeroD = -1;
+        boolean end =false;
+        while (!end) {
+
+
+
+            byteInt = mInputStream.read();
+            if(byteInt == 0x0d){
+                end = true;
+                byteArrayOutputStream.write(byteInt);
+                byteLength++;
+            }else if(byteInt == -1){
+                end =  true;
+            }else{
+                byteArrayOutputStream.write(byteInt);
+                byteLength++;
+            }
+
+
+
+        }
+
+        mByteCounter += byteLength;
+        mReadCounter++;
+
+
+        if (byteLength > 0) {
+            log.i("readByOneByOne run 5" + System.currentTimeMillis() + " " + byteLength);
+//                log.i( "readByBuffer run 6: "+ System.currentTimeMillis() + " "  + availableBytes);
+            mReadHandler.obtainMessage(MESSAGE_READ, byteLength, -1,
+                    byteArrayOutputStream).sendToTarget();
+
+        }
+
+        mDevice2Gate.holdRead();
     }
 
     void readByAvailable() throws IOException {
@@ -224,6 +268,10 @@ public class Device2ReceiveThread extends Thread {
         }
     }
 
+
+    /* **********************************************************************************************
+     *                                          useless
+     */
 
     private void readByBuffer() throws IOException {
 
