@@ -506,8 +506,8 @@ public class BluetoothDevice2Service {
             mDevice2SenderThread.sendMessage(message);
             log.i("startEEG HEART_BEAT:  " + message);
 
-//            mDevice2SenderThread.sendMessage(DeviceCommands.IMPEDENCE_OP);
-//            log.i("startEEG IMPEDENCE_OP:  " + message);
+            mDevice2SenderThread.sendMessage(DeviceCommands.IMPEDENCE_OP);
+            log.i("startEEG IMPEDENCE_OP:  " + message);
 
 
             mPeriodicSender = new TimerTask() {

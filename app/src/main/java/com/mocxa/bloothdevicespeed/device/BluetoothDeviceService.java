@@ -395,6 +395,9 @@ public class BluetoothDeviceService {
             log.i("startEEG HEART_BEAT:  "+ message);
 
 
+            mDeviceSender.sendMessage(DeviceCommands.IMPEDENCE_OP);
+            log.i("startEEG IMPEDENCE_OP:  " + message);
+
             mPeriodicSender = new TimerTask() {
                 @Override
                 public void run() {
