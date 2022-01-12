@@ -53,7 +53,7 @@ public class Device2ReceiveThread extends Thread {
     private Device2Gate mDevice2Gate;
 
 
-    int readMethodApproch = READ_METHOD_BUFFER_PACKET_AVAILABLE;
+    int readMethodApproch = READ_METHOD_SIMPLE;
 
     public Device2ReceiveThread(BluetoothSocket pSocket, Handler pReadHandler, Device2Gate device2Gate) {
         mReadHandler = pReadHandler;
@@ -86,15 +86,15 @@ public class Device2ReceiveThread extends Thread {
                 synchronized (myLock) {
 
 //                    Log.i("ReceiverService:", "ReceiverService run 4")
-
+                    if (mCounter == 0) {
+                        mStartTime = System.currentTimeMillis();
+                    }
                     if (mDevice2Gate.getReadActive().get()) {
                         try {
 //                            log.i( "ReceiverService run 4");
 
 //                        mInputStream.read()
-                            if (mCounter == 0) {
-                                mStartTime = System.currentTimeMillis();
-                            }
+
 
                             if (readMethodApproch == READ_METHOD_SIMPLE) {
                                 readBySimple();
@@ -339,7 +339,7 @@ public class Device2ReceiveThread extends Thread {
         if (availableBytes > 0) {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(DEFAULT_BUFFER_SIZE);
             byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-            //inputStream.read();
+//            mBufferedInputStream.read();
 
             // bytes = inputStream.read(buffer);
             int bytes = mBufferedInputStream.read(buffer, 0, availableBytes);
