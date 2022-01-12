@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.mocxa.bloothdevicespeed.databinding.ActivityMainBinding;
 import com.mocxa.bloothdevicespeed.device.DeviceActivity;
+import com.mocxa.bloothdevicespeed.device2.Device2Activity;
 import com.mocxa.bloothdevicespeed.mobile.BluetoothMobileService;
 import com.mocxa.bloothdevicespeed.mobile.MobileActivity;
 import com.vmadalin.easypermissions.EasyPermissions;
@@ -49,6 +50,9 @@ public class MainActivity extends AppCompatActivity implements
         vBinding.mainMobileMobile.setOnClickListener(v -> {
             startActivityMobile();
         });
+        vBinding.mainMobileDevice2.setOnClickListener(v -> {
+            startActivityMobileDevice2();
+        });
 //        setContentView(R.layout.activity_main);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
@@ -63,8 +67,14 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
+
+
     private void startActivityMobileDevice() {
         startActivity(new Intent(this, DeviceActivity.class));
+
+    }
+    private void startActivityMobileDevice2() {
+        startActivity(new Intent(this, Device2Activity.class));
 
     }
 
