@@ -88,14 +88,14 @@ public class BluetoothDevice2Service {
     /* *****************************************************************
      *                                      log
      */
-    public String getCounterLog() {
+    public String logService() {
 
         long currentTime = System.currentTimeMillis();
 
         if (mReceiverService != null) {
             long timeDiff = (currentTime - mReceiverService.getStartTime());
             long byteCounter = mReceiverService.getByteCounter();
-            return " Receiving:  \n" +
+            log.i(" Receiving:  \n" +
                     "Rate: " +
                     (byteCounter * 1000) / timeDiff +
                     " \n" +
@@ -110,7 +110,12 @@ public class BluetoothDevice2Service {
                     " \n" +
                     "BytesCounter: " +
                     mReceiverService.getByteCounter() +
-                    " \n";
+                    " \n");
+
+        }
+
+        if(mDevice2Gate!=null){
+            mDevice2Gate.logGate();
         }
         return "No result";
 
@@ -120,6 +125,10 @@ public class BluetoothDevice2Service {
 
         if (mReceiverService != null) {
             mReceiverService.resetLog();
+        }
+
+        if(mDevice2Gate!=null){
+            mDevice2Gate.resetLog();
         }
     }
 
@@ -279,13 +288,13 @@ public class BluetoothDevice2Service {
 
         mSetupQueue.clear();
 
-        String message = DeviceCommands.INITIAL_HEART_BEAT;
+      /*  String message = DeviceCommands.INITIAL_HEART_BEAT;
         mSetupQueue.add(message);
 
         message = DeviceCommands.HEART_BEAT;
-        mSetupQueue.add(message);
+        mSetupQueue.add(message);*/
 
-        message = DeviceCommands.deciData1();
+        String message = DeviceCommands.deciData1();
         mSetupQueue.add(message);
 
         message = DeviceCommands.deciData2();
@@ -479,6 +488,9 @@ public class BluetoothDevice2Service {
             mDevice2SenderThread.sendMessage(message);
             log.i("startEEG HEART_BEAT:  " + message);
 
+            mDevice2SenderThread.sendMessage(DeviceCommands.IMPEDENCE_OP);
+            log.i("startEEG IMPEDENCE_OP:  " + message);
+
 
             mPeriodicSender = new TimerTask() {
                 @Override
@@ -497,6 +509,8 @@ public class BluetoothDevice2Service {
 
 
         new Handler(mSendThread.getLooper()).post(() -> {
+            mDevice2Gate.setError(false);
+            mDevice2Gate.clearAcknowledge();
             mDevice2SenderThread.sendMessage(DeviceCommands.STOP);
             stopChat();
 

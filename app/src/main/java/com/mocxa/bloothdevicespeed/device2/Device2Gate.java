@@ -1,11 +1,16 @@
 package com.mocxa.bloothdevicespeed.device2;
 
+import com.mocxa.bloothdevicespeed.tools.UtilLogger;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by Niraj on 09-01-2022.
  */
 public class Device2Gate {
+
+
+    private UtilLogger log = UtilLogger.with(this);
 
     public AtomicBoolean mReadActive = new AtomicBoolean(false);
     public AtomicBoolean mWriteActive = new AtomicBoolean(false);
@@ -26,6 +31,12 @@ public class Device2Gate {
     int mNackCounterLog = 0;
     int mNackCallCounterLog = 0;
 
+    int mReadCounterLog = 0;
+    int mWriteCounterLog = 0;
+    long mReadPeriodLog = 0;
+    long mWritePeriodLog = 0;
+
+
 
     public void holdRead() {
         synchronized (mMyLock) {
@@ -34,6 +45,7 @@ public class Device2Gate {
 
             if (periodRead > READ_MIN_PERIOD) {
                 if (mReadActive.compareAndSet(true, false)) {
+                    mReadPeriodLog += periodRead;
                     enableWrite(currentTime);
                 }
             }
@@ -49,6 +61,7 @@ public class Device2Gate {
                     holdWriteSilently();
                     if (mReadActive.compareAndSet(false, true)) {
                         mAck.compareAndSet(true, false);
+                        mReadCounterLog++;
                         mTimerStart = System.currentTimeMillis();
                     }
                 }
@@ -106,6 +119,7 @@ public class Device2Gate {
             if (periodWrite > WRITE_MAX_PERIOD) {
                 if (mWriteActive.compareAndSet(true, false)) {
                     // TODO do some thing here
+                    mWritePeriodLog += periodWrite;
                 }
             }
         }
@@ -113,12 +127,18 @@ public class Device2Gate {
 
 
     private void holdWriteSilently() {
-        mWriteActive.compareAndSet(true, false);
+        if(mWriteActive.compareAndSet(true, false)){
+            long currentTime = System.currentTimeMillis();
+            long periodWrite = currentTime - mWriteStartTime;
+
+            mWritePeriodLog += periodWrite;
+        }
     }
 
     private void enableWrite(long currentTime) {
         if (mWriteActive.compareAndSet(false, true)) {
             mWriteStartTime = currentTime;
+            mWriteCounterLog++;
 
         }
     }
@@ -129,8 +149,21 @@ public class Device2Gate {
             mAckCounterLog = 0;
             mNackCounterLog = 0;
             mNackCallCounterLog = 0;
+
+            mReadCounterLog=0;
+            mWriteCounterLog=0;
+            mReadPeriodLog=0;
+            mWritePeriodLog=0;
         }
     }
 
+    public void logGate(){
+        log.i("Ack: "+ mAckCounterLog + " Nack: "+ mNackCounterLog +" Nack Call: "+ mNackCallCounterLog);
+        log.i(" Read: "+ mReadCounterLog+ ", period: "+ mReadPeriodLog + " Write: "+ mWriteCounterLog + ", period: "+ mWritePeriodLog );
+    }
 
+
+    public void clearAcknowledge() {
+        mAck.compareAndSet(true, false);
+    }
 }

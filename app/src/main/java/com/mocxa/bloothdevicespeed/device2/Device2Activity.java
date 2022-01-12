@@ -173,7 +173,7 @@ public class Device2Activity extends AppCompatActivity {
         });
 
         vBinding.device2Counter.setOnClickListener(v -> {
-            String logStr = mBluetoothService.getCounterLog();
+            String logStr = mBluetoothService.logService();
 
             String currentMessage = mCurrentMessage;
             int readBytes = mReadBytes;
@@ -494,8 +494,12 @@ public class Device2Activity extends AppCompatActivity {
                 .setNegativeButton("Stop",
                         (dialog, which) -> {
                             log.d("showDialogNackError stop ");
-                            mBluetoothService.stop();
-                            finish();
+                            mBluetoothService.stopEEG();
+                            new Handler().postDelayed(() -> {
+                                mBluetoothService.stop();
+                                finish();
+                            }, 300);
+
                         })
                 .show();
 
