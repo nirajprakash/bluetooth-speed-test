@@ -666,7 +666,7 @@ public class BluetoothDevice2Service {
 
                 byte[] databuf = mPacketQueue.poll();
                 if (databuf != null) {
-                    log.i("Processing  ");
+//                    log.i("Processing  ");
                     mProcessingCounter++;
                     ModelPacket packet = PacketHelper.processBuffer(databuf,
                             DeviceCommands.channel_nos,
