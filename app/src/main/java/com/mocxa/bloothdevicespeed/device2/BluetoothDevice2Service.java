@@ -413,6 +413,22 @@ public class BluetoothDevice2Service {
 
     }
 
+
+    private void sendSetupRetryMessage() {
+        new Handler(mSendThread.getLooper()).post(() -> {
+            if (mDevice2SenderThread != null) {
+                String nextMessage = mSetupQueue.peek();
+                if (nextMessage != null) {
+                    mDevice2SenderThread.sendMessage(nextMessage);
+                }else{
+                    mIsSendingSetup = false;
+                    _mEventMessage.postValue(new LiveDataEvent<>("Setup Sent"));
+                }
+
+            }
+        });
+    }
+
     private void sendSetupNextMessage() {
         new Handler(mSendThread.getLooper()).post(() -> {
             if (mDevice2SenderThread != null) {
@@ -433,7 +449,7 @@ public class BluetoothDevice2Service {
 
         mDevice2Gate.setError(false);
         if(mIsSendingSetup){
-            sendSetupNextMessage();
+            sendSetupRetryMessage();
         }
 
     }
