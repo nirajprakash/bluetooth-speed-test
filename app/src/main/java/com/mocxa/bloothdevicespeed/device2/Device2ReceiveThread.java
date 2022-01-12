@@ -51,7 +51,7 @@ public class Device2ReceiveThread extends Thread {
     private Device2Gate mDevice2Gate;
 
 
-    int readMethodApproch = READ_METHOD_BUFFER;
+    int readMethodApproch = READ_METHOD_BUFFER_ONE_BY_ONE;
 
     public Device2ReceiveThread(BluetoothSocket pSocket, Handler pReadHandler, Device2Gate device2Gate) {
         mReadHandler = pReadHandler;
@@ -222,7 +222,7 @@ public class Device2ReceiveThread extends Thread {
 
     private void readByBuffer() throws IOException {
 
-        log.i("readByBuffer");
+//        log.i("readByBuffer");
         int availableBytes = mBufferedInputStream.available();
         if (availableBytes > 0) {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(Math.max(availableBytes, DEFAULT_BUFFER_SIZE));
@@ -257,12 +257,12 @@ public class Device2ReceiveThread extends Thread {
     }
 
     private void readByBufferOneByOne() throws IOException {
-        int availableBytes = mBufferedInputStream.available();
-        if (availableBytes > 0) {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(Math.max(availableBytes, DEFAULT_BUFFER_SIZE));
+//        int availableBytes = mBufferedInputStream.available();
+//        if (availableBytes > 0) {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(DEFAULT_BUFFER_SIZE);
             int byteLength = 0;
             int byteInt;
-            while ((byteInt = mBufferedInputStream.read()) != -1) {
+             while ((byteInt = mBufferedInputStream.read()) != -1) {
 
                 byteArrayOutputStream.write(byteInt);
                 byteLength ++;
@@ -271,16 +271,20 @@ public class Device2ReceiveThread extends Thread {
             }
             mByteCounter += byteLength;
             mReadCounter++;
-            log.i( "readByBufferOneByOne run 5");
 
-            mReadHandler.obtainMessage(MESSAGE_READ, byteLength, -1,
-                    byteArrayOutputStream).sendToTarget();
+
+            if(byteLength>0){
+                log.i( "readByBufferOneByOne run 5");
+                mReadHandler.obtainMessage(MESSAGE_READ, byteLength, -1,
+                        byteArrayOutputStream).sendToTarget();
+
+            }
 
             mDevice2Gate.holdRead();
-        } else {
+//        } else {
 //                                log.i( "ReceiverService run 7");
-            mDevice2Gate.holdRead();
-        }
+//            mDevice2Gate.holdRead();
+//        }
     }
 
 }
