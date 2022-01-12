@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 // https://stackoverflow.com/questions/5826198/inputstream-available-is-0-always#
 // reader https://social.msdn.microsoft.com/Forums/en-US/f559d5c7-b195-462e-bec2-dfb28bf1c7e4/bluetooth-socket-is-blocked-on-read?forum=xamarinandroid
 // reader https://stackoverflow.com/questions/66299558/android-bluetooth-socket-has-incomplete-buffer-after-restart
-    // write close http://www.java2s.com/example/android/bluetooth/handles-closing-the-bluetooth-socket-and-flushescloses-output-stream.html
+// write close http://www.java2s.com/example/android/bluetooth/handles-closing-the-bluetooth-socket-and-flushescloses-output-stream.html
 public class Device2ReceiveThread extends Thread {
 
     private static final int READ_METHOD_SIMPLE = 286;
@@ -35,7 +35,7 @@ public class Device2ReceiveThread extends Thread {
     public static final int MESSAGE_READ = 647;
 
 
-    private  BufferedInputStream mBufferedInputStream;
+    private BufferedInputStream mBufferedInputStream;
     private final Handler mReadHandler;
 
     private InputStream mInputStream = null;
@@ -59,7 +59,7 @@ public class Device2ReceiveThread extends Thread {
         try {
             mInputStream = pSocket.getInputStream();
 
-            if(readMethodApproch == READ_METHOD_BUFFER || readMethodApproch == READ_METHOD_BUFFER_ONE_BY_ONE || readMethodApproch == READ_METHOD_BUFFER_PACKET){
+            if (readMethodApproch == READ_METHOD_BUFFER || readMethodApproch == READ_METHOD_BUFFER_ONE_BY_ONE || readMethodApproch == READ_METHOD_BUFFER_PACKET) {
                 mBufferedInputStream = new BufferedInputStream(mInputStream);
             }
         } catch (IOException e) {
@@ -91,21 +91,19 @@ public class Device2ReceiveThread extends Thread {
                                 mStartTime = System.currentTimeMillis();
                             }
 
-                            if(readMethodApproch == READ_METHOD_SIMPLE){
+                            if (readMethodApproch == READ_METHOD_SIMPLE) {
                                 readBySimple();
-                            }else if(readMethodApproch == READ_METHOD_AVAILABLE){
+                            } else if (readMethodApproch == READ_METHOD_AVAILABLE) {
                                 readByAvailable();
 
-                            }else if(readMethodApproch == READ_METHOD_BUFFER){
+                            } else if (readMethodApproch == READ_METHOD_BUFFER) {
                                 readByBuffer();
 
-                            }else if(readMethodApproch == READ_METHOD_BUFFER_ONE_BY_ONE){
+                            } else if (readMethodApproch == READ_METHOD_BUFFER_ONE_BY_ONE) {
                                 readByBufferOneByOne();
-                            }else if(readMethodApproch == READ_METHOD_BUFFER_PACKET){
+                            } else if (readMethodApproch == READ_METHOD_BUFFER_PACKET) {
                                 readByBufferPacket();
                             }
-
-
 
 
                         } catch (IOException e) {
@@ -122,7 +120,6 @@ public class Device2ReceiveThread extends Thread {
 
         }
     }
-
 
 
     public void toggleConnected(boolean isConnected) {
@@ -159,22 +156,22 @@ public class Device2ReceiveThread extends Thread {
      *                                             read
      */
 
-    void readBySimple() throws IOException{
+    void readBySimple() throws IOException {
         int availableBytes = mInputStream.available();
-        if (availableBytes >0){
+        if (availableBytes > 0) {
             byte[] buffer = new byte[Math.max(availableBytes, DEFAULT_BUFFER_SIZE)];
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(Math.max(availableBytes, DEFAULT_BUFFER_SIZE));
             //inputStream.read();
 
             // bytes = inputStream.read(buffer);
-            int bytes =  mInputStream.read(buffer,0, availableBytes);
+            int bytes = mInputStream.read(buffer, 0, availableBytes);
 
 
-            if(bytes>0){
+            if (bytes > 0) {
                 byteArrayOutputStream.write(buffer, 0, bytes);
                 mByteCounter += bytes;
                 mReadCounter++;
-                log.i( "readBySimple run 6: "+ System.currentTimeMillis() + " "  + bytes);
+                log.i("readBySimple run 6: " + System.currentTimeMillis() + " " + bytes);
 
                 mReadHandler.obtainMessage(MESSAGE_READ, bytes, -1,
                         byteArrayOutputStream).sendToTarget();
@@ -182,7 +179,7 @@ public class Device2ReceiveThread extends Thread {
 
 
             mDevice2Gate.holdRead();
-        }else{
+        } else {
             mDevice2Gate.holdRead();
         }
     }
@@ -204,13 +201,13 @@ public class Device2ReceiveThread extends Thread {
                 byteArrayOutputStream.write(buffer, writeOffset, bytes);
                 writeOffset += bytes;
 
-                log.i( "readByAvailable run 6: "+ System.currentTimeMillis() + " "  + availableBytes);
+                log.i("readByAvailable run 6: " + System.currentTimeMillis() + " " + availableBytes);
                 availableBytes = mInputStream.available();
 
             }
             mByteCounter += byteLength;
             mReadCounter++;
-            log.i( "readByAvailable run 5");
+            log.i("readByAvailable run 5");
 
             mReadHandler.obtainMessage(MESSAGE_READ, byteLength, -1,
                     byteArrayOutputStream).sendToTarget();
@@ -241,13 +238,13 @@ public class Device2ReceiveThread extends Thread {
                 byteArrayOutputStream.write(buffer, writeOffset, bytes);
                 writeOffset += bytes;
 
-                log.i( "readByBuffer run 6: "+ System.currentTimeMillis() + " "  + availableBytes);
+                log.i("readByBuffer run 6: " + System.currentTimeMillis() + " " + availableBytes);
                 availableBytes = mBufferedInputStream.available();
 
             }
             mByteCounter += byteLength;
             mReadCounter++;
-            log.i( "readByBuffer run 5");
+            log.i("readByBuffer run 5");
 
             mReadHandler.obtainMessage(MESSAGE_READ, byteLength, -1,
                     byteArrayOutputStream).sendToTarget();
@@ -262,29 +259,29 @@ public class Device2ReceiveThread extends Thread {
     private void readByBufferOneByOne() throws IOException {
 //        int availableBytes = mBufferedInputStream.available();
 //        if (availableBytes > 0) {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(DEFAULT_BUFFER_SIZE);
-            int byteLength = 0;
-            int byteInt;
-             while ((byteInt = mBufferedInputStream.read()) != -1) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(DEFAULT_BUFFER_SIZE);
+        int byteLength = 0;
+        int byteInt;
+        while ((byteInt = mBufferedInputStream.read()) != -1) {
 
-                byteArrayOutputStream.write(byteInt);
-                byteLength ++;
-
-
-            }
-            mByteCounter += byteLength;
-            mReadCounter++;
+            byteArrayOutputStream.write(byteInt);
+            byteLength++;
 
 
-            if(byteLength>0){
-                log.i( "readByBufferOneByOne run 5"+ System.currentTimeMillis() + " "  + byteLength);
+        }
+        mByteCounter += byteLength;
+        mReadCounter++;
+
+
+        if (byteLength > 0) {
+            log.i("readByBufferOneByOne run 5" + System.currentTimeMillis() + " " + byteLength);
 //                log.i( "readByBuffer run 6: "+ System.currentTimeMillis() + " "  + availableBytes);
-                mReadHandler.obtainMessage(MESSAGE_READ, byteLength, -1,
-                        byteArrayOutputStream).sendToTarget();
+            mReadHandler.obtainMessage(MESSAGE_READ, byteLength, -1,
+                    byteArrayOutputStream).sendToTarget();
 
-            }
+        }
 
-            mDevice2Gate.holdRead();
+        mDevice2Gate.holdRead();
 //        } else {
 //                                log.i( "ReceiverService run 7");
 //            mDevice2Gate.holdRead();
@@ -299,31 +296,25 @@ public class Device2ReceiveThread extends Thread {
         //inputStream.read();
 
         // bytes = inputStream.read(buffer);
-        int bytes =  mBufferedInputStream.read(buffer);
+        int bytes = mBufferedInputStream.read(buffer);
         int writeOffset = 0;
 
 
         int byteLength = 0;
-        while (bytes>0) {
+//        while (bytes>0) {
 
 
-            byteLength += bytes;
-            byteArrayOutputStream.write(buffer, writeOffset, bytes);
-            writeOffset += bytes;
-
-            buffer = new byte[ DEFAULT_BUFFER_SIZE];
-            bytes =  mBufferedInputStream.read(buffer);
+        byteLength += bytes;
+        byteArrayOutputStream.write(buffer, writeOffset, bytes);
 
 
-
-
-        }
+//        }
         mByteCounter += byteLength;
         mReadCounter++;
 
 
-        if(byteLength>0){
-            log.i( "readByBufferPacket run 5"+ System.currentTimeMillis() + " "  + byteLength);
+        if (byteLength > 0) {
+            log.i("readByBufferPacket run 5" + System.currentTimeMillis() + " " + byteLength);
             mReadHandler.obtainMessage(MESSAGE_READ, byteLength, -1,
                     byteArrayOutputStream).sendToTarget();
 
