@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import com.mocxa.bloothdevicespeed.tools.UtilLogger;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -20,8 +21,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class Device2SenderThread extends Thread {
 
+    private static final int WRITE_METHOD_SIMPLE = 286;
+    private static final int WRITE_METHOD_BUFFER = 731;
+
     private UtilLogger log = UtilLogger.with(this);
     private static final int MESSAGE_SEND = 487;
+
+    private  BufferedOutputStream mBufferedOutputStream;
     BluetoothSocket mSocket;
 
     private OutputStream mOutputStream = null;
@@ -35,6 +41,8 @@ public class Device2SenderThread extends Thread {
     int mCounterLog = 0;
      int mWriteCounterLog = 0;
 
+     int writeMethodApproch = WRITE_METHOD_BUFFER;
+
 
 // TODO   HandlerThread mHandlerThread = null;
 // TODO  private Handler mReaderHandler;
@@ -46,6 +54,11 @@ public class Device2SenderThread extends Thread {
         mSocket = pSocket;
         try {
             mOutputStream = mSocket.getOutputStream();
+
+            if(writeMethodApproch == WRITE_METHOD_BUFFER){
+                mBufferedOutputStream = new BufferedOutputStream(mOutputStream);
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -117,9 +130,19 @@ public class Device2SenderThread extends Thread {
             by[k] = (byte) test[k];
         }
         try {
-            mOutputStream.write(by);
-            log.i("writing Message: "+ System.currentTimeMillis() + " ");
-            mOutputStream.flush();
+            if(writeMethodApproch == WRITE_METHOD_BUFFER){
+                mBufferedOutputStream.write(by);
+                log.i("writing Message 1: "+ System.currentTimeMillis() + " ");
+
+//               Doubt mBufferedOutputStream.flush();
+            }else {
+                mOutputStream.write(by);
+                log.i("writing Message 2: "+ System.currentTimeMillis() + " ");
+                mOutputStream.flush();
+                log.i("writing Message 3: "+ System.currentTimeMillis() + " ");
+            }
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }

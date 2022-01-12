@@ -20,8 +20,8 @@ public class Device2Gate {
 
     final Object mMyLock = new Object();
 
-    private final long WRITE_MAX_PERIOD = 10L;
-    private final long READ_MIN_PERIOD = 50L;
+    private final long WRITE_MAX_PERIOD = 5L;
+    private final long READ_MIN_PERIOD = 90L;
 
     private final long TIMER_PERIOD = 100L;
     private long mTimerStart = System.currentTimeMillis();
