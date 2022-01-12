@@ -52,14 +52,14 @@ public class Device2ReceiveThread extends Thread {
 
             if (mIsConnected.get() && mInputStream != null) {
 
-                log.i( "ReceiverService run 3");
+//                log.i( "ReceiverService run 3");
                 synchronized (myLock) {
 
 //                    Log.i("ReceiverService:", "ReceiverService run 4")
 
                     if (mDevice2Gate.getReadActive().get()) {
                         try {
-                            log.i( "ReceiverService run 4");
+//                            log.i( "ReceiverService run 4");
 
 //                        mInputStream.read()
                             if (mCounter == 0) {
@@ -81,6 +81,8 @@ public class Device2ReceiveThread extends Thread {
                                 }
                                 mByteCounter += byteLength;
                                 mReadCounter++;
+                                log.i( "ReceiverService run 5");
+
                                 mReadHandler.obtainMessage(MESSAGE_READ, byteLength, -1,
                                         byteArrayOutputStream).sendToTarget();
 
