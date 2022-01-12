@@ -53,7 +53,7 @@ public class Device2ReceiveThread extends Thread {
     private Device2Gate mDevice2Gate;
 
 
-    int readMethodApproch = READ_METHOD_BUFFER_PACKET;
+    int readMethodApproch = READ_METHOD_BUFFER_PACKET_AVAILABLE;
 
     public Device2ReceiveThread(BluetoothSocket pSocket, Handler pReadHandler, Device2Gate device2Gate) {
         mReadHandler = pReadHandler;

@@ -46,7 +46,7 @@ public class Device2Gate {
 //            if (periodRead > READ_MIN_PERIOD) {
             if (mReadActive.compareAndSet(true, false)) {
                 mReadPeriodLog += periodRead;
-                log.i("hold Read");
+//                log.i("hold Read");
                 enableWrite(currentTime);
             }
 //            }
@@ -62,7 +62,7 @@ public class Device2Gate {
             if (mReadActive.compareAndSet(false, true)) {
                 mAck.compareAndSet(true, false);
                 mReadCounterLog++;
-                log.i("enable Read");
+//                log.i("enable Read");
 
                 mTimerStart = System.currentTimeMillis();
             }
@@ -119,7 +119,7 @@ public class Device2Gate {
             if (mWriteActive.compareAndSet(true, false)) {
                 // TODO do some thing here
                 mWritePeriodLog += periodWrite;
-                log.i("hold Write");
+//                log.i("hold Write");
 
             }
         }
