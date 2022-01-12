@@ -4,6 +4,8 @@ import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.util.Log;
 
+import com.mocxa.bloothdevicespeed.tools.UtilLogger;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class Device2ReceiveThread extends Thread {
 
+    private UtilLogger log = UtilLogger.with(this);
     public static final int MESSAGE_READ = 647;
     private final Handler mReadHandler;
 
@@ -49,13 +52,15 @@ public class Device2ReceiveThread extends Thread {
 
             if (mIsConnected.get() && mInputStream != null) {
 
-//                Log.i("ReceiverService:", "ReceiverService run 3")
+                log.i( "ReceiverService run 3");
                 synchronized (myLock) {
 
 //                    Log.i("ReceiverService:", "ReceiverService run 4")
 
                     if (mDevice2Gate.getReadActive().get()) {
                         try {
+                            log.i( "ReceiverService run 4");
+
 //                        mInputStream.read()
                             if (mCounter == 0) {
                                 mStartTime = System.currentTimeMillis();
