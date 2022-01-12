@@ -200,6 +200,7 @@ public class BluetoothDevice2Service {
 
     public void onConnected(BluetoothSocket socket) {
         mSocket = socket;
+        log.i("Socket: "+ mSocket.getMaxReceivePacketSize() +" " + mSocket.getMaxTransmitPacketSize());
         mState = BluetoothConstants.STATE_CONNECTED;
         mEventConnected.postValue(new LiveDataEvent(socket));
         if (mConnectThread != null) {
