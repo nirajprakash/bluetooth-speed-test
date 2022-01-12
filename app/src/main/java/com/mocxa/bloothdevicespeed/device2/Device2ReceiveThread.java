@@ -221,6 +221,8 @@ public class Device2ReceiveThread extends Thread {
 
 
     private void readByBuffer() throws IOException {
+
+        log.i("readByBuffer");
         int availableBytes = mBufferedInputStream.available();
         if (availableBytes > 0) {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(Math.max(availableBytes, DEFAULT_BUFFER_SIZE));
