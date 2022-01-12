@@ -90,6 +90,7 @@ public class Device2ReceiveThread extends Thread {
 
                                 mDevice2Gate.holdRead();
                             } else {
+                                log.i( "ReceiverService run 7");
                                 mDevice2Gate.holdRead();
                             }
 
