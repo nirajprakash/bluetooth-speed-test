@@ -42,7 +42,7 @@ public class Device2SenderThread extends Thread {
     int mCounterLog = 0;
      int mWriteCounterLog = 0;
 
-     int writeMethodApproch = WRITE_METHOD_BUFFER;
+     int writeMethodApproch = WRITE_METHOD_SIMPLE;
 
 
 // TODO   HandlerThread mHandlerThread = null;
