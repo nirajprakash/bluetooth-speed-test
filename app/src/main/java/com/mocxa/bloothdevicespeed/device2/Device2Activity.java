@@ -301,7 +301,9 @@ public class Device2Activity extends AppCompatActivity {
                         String readMessage = new String(readBuf, 0, msg.arg1);
                         mCurrentMessage = readMessage;*/
                         mReadBytes += msg.arg1;
-                        ByteArrayOutputStream byteArrayOutputStream = (ByteArrayOutputStream) msg.obj;
+                       /*
+                       TODO uncomment
+                       ByteArrayOutputStream byteArrayOutputStream = (ByteArrayOutputStream) msg.obj;
                         byte[] readBuf = byteArrayOutputStream.toByteArray();
 //                        log.i( "read Message 1:");
 
@@ -313,7 +315,7 @@ public class Device2Activity extends AppCompatActivity {
 //                            Log.d("Live Graph", "");
                             mBluetoothService.onBytes(readBuf);
 //                            packetQueue.add(readBuf);
-                        }
+                        }*/
 
                     }
                 }
