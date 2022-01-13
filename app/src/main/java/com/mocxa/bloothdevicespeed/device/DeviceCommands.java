@@ -18,7 +18,7 @@ public class DeviceCommands {
     public static String END_ONGOING = "28,32,32,119,32,38,33,13";
     public static String IMPEDENCE_OP = "28,32,32,119,32,39,33,13";
     public static String STOP = "28,32,32,119,32,48,32,13,10";
-    public static int channel_nos = 16;//8 //24;
+    public static int channel_nos = 24;//16;//8 //24;
 
 
     public static String deciData1(){
