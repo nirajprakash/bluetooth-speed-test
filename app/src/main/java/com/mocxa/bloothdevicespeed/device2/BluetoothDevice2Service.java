@@ -560,17 +560,21 @@ public class BluetoothDevice2Service {
 
             }
 
+            boolean isIncremented = false;
             if (!mTransmissionPacketSent) {
-                mDevice2Gate.incrementWriteCounter(2);
+                isIncremented = mDevice2Gate.incrementWriteCounter(2);
 //                mDevice2Gate.incrementWriteCounter(1);
                 mDevice2SenderThread.sendMessage(DeviceCommands.TRANSMISSION);
 
                 mTransmissionPacketSent = true;
             }else{
-                mDevice2Gate.incrementWriteCounter(1);
+                isIncremented = mDevice2Gate.incrementWriteCounter(1);
             }
 //            mDevice2Gate.incrementWriteCounter(1);
-            mDevice2SenderThread.sendMessage(DeviceCommands.HEART_BEAT);
+            if(isIncremented){
+                mDevice2SenderThread.sendMessage(DeviceCommands.HEART_BEAT);
+            }
+
 
         });
     }
