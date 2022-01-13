@@ -61,7 +61,6 @@ public class Device2Gate {
     }
 
     public void enableRead() {
-        synchronized (mMyLock) {
 
             if (mWriteActive.get()) {
                 return;
@@ -78,7 +77,6 @@ public class Device2Gate {
             }
 
 
-        }
     }
 
     public void acknowledge() {
@@ -124,14 +122,17 @@ public class Device2Gate {
 
     public void holdWrite() {
         synchronized (mMyLock) {
-            long currentTime = System.currentTimeMillis();
-            long periodWrite = currentTime - mWriteStartTime;
-            if (mWriteActive.compareAndSet(true, false)) {
-                // TODO do some thing here
-                mWritePeriodLog += periodWrite;
+            if(mWriteActive.get()){
+                long currentTime = System.currentTimeMillis();
+                long periodWrite = currentTime - mWriteStartTime;
+                if (mWriteActive.compareAndSet(true, false)) {
+                    // TODO do some thing here
+                    mWritePeriodLog += periodWrite;
 //                log.i("hold Write");
 
+                }
             }
+
         }
     }
 
@@ -151,7 +152,6 @@ public class Device2Gate {
 
     private void enableWrite(long currentTime) {
 
-        synchronized (mMyLock) {
             if (mReadActive.get()) {
                 return;
             }
@@ -161,7 +161,7 @@ public class Device2Gate {
                 mWriteCounterLog++;
 
             }
-        }
+
     }
 
 
@@ -193,7 +193,7 @@ public class Device2Gate {
      *                                        write counter
      */
     public void decrementWriteCounter(HandlerThread thread) {
-        synchronized (mMyLock) {
+
 
              if(mWaitingWriteCounter.get() == 1){
                 new Handler(thread.getLooper()).postDelayed(() -> {
@@ -213,11 +213,11 @@ public class Device2Gate {
                 log.i("decrementWriteCounter other: "+ value);
             }
 
-        }
+
     }
 
     public void incrementWriteCounter(int count) {
-        synchronized (mMyLock) {
+
             if(mWaitingWriteCounter.get() == -1){
 
                 mWaitingWriteCounter.addAndGet(count+1);
@@ -229,6 +229,6 @@ public class Device2Gate {
 
             }
 
-        }
+
     }
 }
