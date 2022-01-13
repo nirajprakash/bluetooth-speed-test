@@ -72,7 +72,7 @@ public class Device2Gate {
             if (mReadActive.compareAndSet(false, true)) {
                 mAck.compareAndSet(true, false);
                 mReadCounterLog++;
-                log.i("enable Read");
+//                log.i("enable Read");
 
                 mTimerStart = System.currentTimeMillis();
             }
@@ -150,14 +150,17 @@ public class Device2Gate {
     }
 
     private void enableWrite(long currentTime) {
-        if (mReadActive.get()) {
-            return;
-        }
-        if (mWriteActive.compareAndSet(false, true)) {
-            mWriteStartTime = currentTime;
-//            log.i("enable Write");
-            mWriteCounterLog++;
 
+        synchronized (mMyLock) {
+            if (mReadActive.get()) {
+                return;
+            }
+            if (mWriteActive.compareAndSet(false, true)) {
+                mWriteStartTime = currentTime;
+//            log.i("enable Write");
+                mWriteCounterLog++;
+
+            }
         }
     }
 
