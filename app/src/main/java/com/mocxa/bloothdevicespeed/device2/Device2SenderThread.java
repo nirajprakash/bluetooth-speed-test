@@ -147,7 +147,7 @@ public class Device2SenderThread extends Thread {
             }else {
                 mOutputStream.write(by);
 //                log.i("writing Message 2: "+ System.currentTimeMillis() + " ");
-                mOutputStream.flush();
+//                mOutputStream.flush();
 //                log.i("writing Message 3: "+ System.currentTimeMillis() + " ");
             }
 
