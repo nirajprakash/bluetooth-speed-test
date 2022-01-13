@@ -257,9 +257,9 @@ public class Device2Activity extends AppCompatActivity {
         }
 //            Log.i("mainActivity: ", logStr);
 
-        log.i(logStr);
-        mBluetoothService.resetCounterLog();
+//        log.i(logStr);
         vBinding.device2CounterLog.setText(logStr);
+        mBluetoothService.resetCounterLog();
     }
 
     private void setupBluetooth() {

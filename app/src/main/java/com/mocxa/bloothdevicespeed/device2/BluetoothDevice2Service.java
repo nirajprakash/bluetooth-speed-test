@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.lifecycle.MediatorLiveData;
@@ -93,10 +94,12 @@ public class BluetoothDevice2Service {
 
         long currentTime = System.currentTimeMillis();
 
+        String logMessage = "";
         if (mReceiverService != null) {
             long timeDiff = (currentTime - mReceiverService.getStartTime());
             long byteCounter = mReceiverService.getByteCounter();
-            log.i(" Receiving:  \n" +
+
+            logMessage =" Receiving:  \n" +
                     "Rate: " +
                     (byteCounter * 1000) / timeDiff +
                     " \n" +
@@ -111,14 +114,19 @@ public class BluetoothDevice2Service {
                     " \n" +
                     "BytesCounter: " +
                     mReceiverService.getByteCounter() +
-                    " \n");
+                    " \n";
+            log.i(logMessage);
 
         }
 
         if(mDevice2Gate!=null){
             mDevice2Gate.logGate();
         }
-        return "No result";
+        if(TextUtils.isEmpty(logMessage)){
+            return "No result";
+        }
+        return logMessage;
+
 
     }
 
