@@ -192,14 +192,15 @@ public class Device2Gate {
     public void decrementWriteCounter(HandlerThread thread) {
         synchronized (mMyLock) {
 
-            if (mWaitingWriteCounter.get() > 1) {
-
-                mWaitingWriteCounter.decrementAndGet();
-            }else if(mWaitingWriteCounter.get() == 1){
+             if(mWaitingWriteCounter.get() == 1){
                 new Handler(thread.getLooper()).postDelayed(() -> {
                     int value = mWaitingWriteCounter.decrementAndGet();
                     log.i("decrementWriteCounter end: "+ value);
                 }, 100L);
+            }else if (mWaitingWriteCounter.get() > 1) {
+
+                int value = mWaitingWriteCounter.decrementAndGet();
+                log.i("decrementWriteCounter other: "+ value);
             }
 
         }
