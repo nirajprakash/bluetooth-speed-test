@@ -194,8 +194,15 @@ public class Device2Gate {
 
              if(mWaitingWriteCounter.get() == 1){
                 new Handler(thread.getLooper()).postDelayed(() -> {
-                    int value = mWaitingWriteCounter.decrementAndGet();
-                    log.i("decrementWriteCounter end: "+ value);
+
+                    if(mWaitingWriteCounter.compareAndSet(1, 0)){
+                        log.i("decrementWriteCounter end: "+ 0);                       
+                    }else{
+                        log.i("decrementWriteCounter end: ");
+
+                    }
+
+
                 }, 100L);
             }else if (mWaitingWriteCounter.get() > 1) {
 
