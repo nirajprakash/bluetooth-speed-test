@@ -267,7 +267,7 @@ public class BluetoothDevice2Service {
         if (mSocket != null) {
             Log.i("Bluetooth Service: ", "setupSender");
 
-            mDevice2SenderThread = new Device2SenderThread(mSocket, mDevice2Gate);
+            mDevice2SenderThread = new Device2SenderThread(mSocket, mDevice2Gate, mSendThread);
             if (mState == BluetoothConstants.STATE_CONNECTED) {
                 mDevice2SenderThread.toggleConnected(true);
             } else {

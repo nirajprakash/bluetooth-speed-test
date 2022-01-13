@@ -23,6 +23,7 @@ public class Device2SenderThread extends Thread {
 
     private static final int WRITE_METHOD_SIMPLE = 286;
     private static final int WRITE_METHOD_BUFFER = 731;
+    private final HandlerThread mHandlerThread;
 
     private UtilLogger log = UtilLogger.with(this);
     private static final int MESSAGE_SEND = 487;
@@ -50,8 +51,9 @@ public class Device2SenderThread extends Thread {
     private Device2Gate mDevice2Gate;
 
 
-    public Device2SenderThread(BluetoothSocket pSocket, Device2Gate device2Gate) {
+    public Device2SenderThread(BluetoothSocket pSocket, Device2Gate device2Gate, HandlerThread handlerThread) {
         mSocket = pSocket;
+        this.mHandlerThread = handlerThread;
         try {
             mOutputStream = mSocket.getOutputStream();
 
@@ -84,7 +86,7 @@ public class Device2SenderThread extends Thread {
 
                             write(pollMessage);
                             mWriteCounterLog++;
-                            mDevice2Gate.decrementWriteCounter();
+                            mDevice2Gate.decrementWriteCounter(mHandlerThread);
                         }else{
                             mDevice2Gate.holdWrite();
                         }

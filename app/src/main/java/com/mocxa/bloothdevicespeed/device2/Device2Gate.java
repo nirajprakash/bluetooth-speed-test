@@ -1,6 +1,7 @@
 package com.mocxa.bloothdevicespeed.device2;
 
 import android.os.Handler;
+import android.os.HandlerThread;
 
 import com.mocxa.bloothdevicespeed.tools.UtilLogger;
 
@@ -188,14 +189,14 @@ public class Device2Gate {
     /* *********************************************************************************
      *                                        write counter
      */
-    public void decrementWriteCounter() {
+    public void decrementWriteCounter(HandlerThread thread) {
         synchronized (mMyLock) {
 
             if (mWaitingWriteCounter.get() > 1) {
 
                 mWaitingWriteCounter.decrementAndGet();
             }else if(mWaitingWriteCounter.get() == 1){
-                new Handler().postDelayed(() -> {
+                new Handler(thread.getLooper()).postDelayed(() -> {
                     mWaitingWriteCounter.decrementAndGet();
                 }, 50L);
             }
