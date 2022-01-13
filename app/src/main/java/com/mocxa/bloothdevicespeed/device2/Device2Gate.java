@@ -196,7 +196,7 @@ public class Device2Gate {
                 new Handler(thread.getLooper()).postDelayed(() -> {
 
                     if(mWaitingWriteCounter.compareAndSet(1, 0)){
-                        log.i("decrementWriteCounter end: "+ 0);                       
+                        log.i("decrementWriteCounter end: "+ 0);
                     }else{
                         log.i("decrementWriteCounter end: ");
 
