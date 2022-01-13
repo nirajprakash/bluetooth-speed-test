@@ -138,14 +138,14 @@ public class Device2SenderThread extends Thread {
         try {
             if(writeMethodApproch == WRITE_METHOD_BUFFER){
                 mBufferedOutputStream.write(by);
-                mBufferedOutputStream.flush();
+//                mBufferedOutputStream.flush();
 //                log.i("writing Message 1: "+ System.currentTimeMillis() + " ");
 
 //               Doubt mBufferedOutputStream.flush();
             }else {
                 mOutputStream.write(by);
 //                log.i("writing Message 2: "+ System.currentTimeMillis() + " ");
-                mOutputStream.flush();
+//                mOutputStream.flush();
 //                log.i("writing Message 3: "+ System.currentTimeMillis() + " ");
             }
 
