@@ -210,8 +210,13 @@ public class Device2ReceiveThread extends Thread {
             }else if(byteInt == -1){
                 end =  true;
             }else{
+
                 byteArrayOutputStream.write(byteInt);
                 byteLength++;
+            }
+
+            if(System.currentTimeMillis()%1000 == 0){
+                log.i("reading: "+ byteLength);
             }
 
 
