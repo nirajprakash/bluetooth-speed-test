@@ -84,6 +84,7 @@ public class Device2SenderThread extends Thread {
 
                             write(pollMessage);
                             mWriteCounterLog++;
+                            mDevice2Gate.decrementWriteCounter();
                         }else{
                             mDevice2Gate.holdWrite();
                         }

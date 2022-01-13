@@ -339,6 +339,7 @@ public class BluetoothDevice2Service {
                 if (nextMessage != null) {
                     log.i("send Message Setup 1: ");
 
+                    mDevice2Gate.incrementWriteCounter(1);
                     mDevice2SenderThread.sendMessage(nextMessage);
                 }
 
@@ -422,6 +423,8 @@ public class BluetoothDevice2Service {
             if (mDevice2SenderThread != null) {
                 String nextMessage = mSetupQueue.peek();
                 if (nextMessage != null) {
+
+                    mDevice2Gate.incrementWriteCounter(1);
                     mDevice2SenderThread.sendMessage(nextMessage);
                 }else{
                     mIsSendingSetup = false;
@@ -438,6 +441,7 @@ public class BluetoothDevice2Service {
                 mSetupQueue.poll();
                 String nextMessage = mSetupQueue.peek();
                 if (nextMessage != null) {
+                    mDevice2Gate.incrementWriteCounter(1);
                     mDevice2SenderThread.sendMessage(nextMessage);
                 }else{
                     mIsSendingSetup = false;
@@ -498,6 +502,10 @@ public class BluetoothDevice2Service {
         mIsSendingSetup = false;
 
         new Handler(mSendThread.getLooper()).post(() -> {
+
+
+            mDevice2Gate.incrementWriteCounter(3);
+
             String message = DeviceCommands.INITIAL_HEART_BEAT;
             mDevice2SenderThread.sendMessage(message);
             log.i("startEEG initial:  " + message);
@@ -509,6 +517,8 @@ public class BluetoothDevice2Service {
 
             mDevice2SenderThread.sendMessage(DeviceCommands.IMPEDENCE_OP);
             log.i("startEEG IMPEDENCE_OP:  " + message);
+
+
 
 
             mPeriodicSender = new TimerTask() {
@@ -530,7 +540,10 @@ public class BluetoothDevice2Service {
         new Handler(mSendThread.getLooper()).post(() -> {
             mDevice2Gate.setError(false);
             mDevice2Gate.clearAcknowledge();
+
+            mDevice2Gate.incrementWriteCounter(1);
             mDevice2SenderThread.sendMessage(DeviceCommands.STOP);
+
             stopChat();
 
 
@@ -541,9 +554,13 @@ public class BluetoothDevice2Service {
 
     private void periodicSend() {
         new Handler(mSendThread.getLooper()).post(() -> {
+//            mDevice2Gate.incrementWriteCounter(1);
             mDevice2SenderThread.sendMessage(DeviceCommands.HEART_BEAT);
+
             if (!mTransmissionPacketSent) {
+//                mDevice2Gate.incrementWriteCounter(1);
                 mDevice2SenderThread.sendMessage(DeviceCommands.TRANSMISSION);
+
                 mTransmissionPacketSent = true;
             }
         });

@@ -3,6 +3,7 @@ package com.mocxa.bloothdevicespeed.device2;
 import com.mocxa.bloothdevicespeed.tools.UtilLogger;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Niraj on 09-01-2022.
@@ -19,6 +20,9 @@ public class Device2Gate {
     public AtomicBoolean mNack = new AtomicBoolean(false);
 
     final Object mMyLock = new Object();
+
+    AtomicInteger mWaitingWriteCounter = new AtomicInteger(-1);
+    boolean waitingWrite = true;
 
 //    private final long WRITE_MAX_PERIOD = 5L;
 //    private final long READ_MIN_PERIOD = 80L;
@@ -57,6 +61,9 @@ public class Device2Gate {
         synchronized (mMyLock) {
 
             if (mWriteActive.get()) {
+                return;
+            }
+            if (mWaitingWriteCounter.get() != 0) {
                 return;
             }
             if (mReadActive.compareAndSet(false, true)) {
@@ -134,9 +141,11 @@ public class Device2Gate {
             mWritePeriodLog += periodWrite;
         }
     }
+
     public void enableWrite() {
         enableWrite(System.currentTimeMillis());
     }
+
     private void enableWrite(long currentTime) {
         if (mReadActive.get()) {
             return;
@@ -174,4 +183,28 @@ public class Device2Gate {
     }
 
 
+    /* *********************************************************************************
+     *                                        write counter
+     */
+    public void decrementWriteCounter() {
+        synchronized (mMyLock) {
+            if (mWaitingWriteCounter.get() > 0) {
+                mWaitingWriteCounter.decrementAndGet();
+            }
+
+        }
+    }
+
+    public void incrementWriteCounter(int count) {
+        synchronized (mMyLock) {
+            if(mWaitingWriteCounter.get() == -1){
+                mWaitingWriteCounter.addAndGet(count+1);
+
+            }else{
+                mWaitingWriteCounter.addAndGet(count);
+
+            }
+
+        }
+    }
 }
