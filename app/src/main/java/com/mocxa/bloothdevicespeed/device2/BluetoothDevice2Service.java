@@ -557,16 +557,21 @@ public class BluetoothDevice2Service {
         new Handler(mSendThread.getLooper()).post(() -> {
             if(mHoldHeartBeat){
                 return;
+
             }
-//            mDevice2Gate.incrementWriteCounter(1);
-            mDevice2SenderThread.sendMessage(DeviceCommands.HEART_BEAT);
 
             if (!mTransmissionPacketSent) {
+                mDevice2Gate.incrementWriteCounter(2);
 //                mDevice2Gate.incrementWriteCounter(1);
                 mDevice2SenderThread.sendMessage(DeviceCommands.TRANSMISSION);
 
                 mTransmissionPacketSent = true;
+            }else{
+                mDevice2Gate.incrementWriteCounter(1);
             }
+//            mDevice2Gate.incrementWriteCounter(1);
+            mDevice2SenderThread.sendMessage(DeviceCommands.HEART_BEAT);
+
         });
     }
 
