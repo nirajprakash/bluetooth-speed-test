@@ -72,7 +72,7 @@ public class Device2Gate {
             if (mReadActive.compareAndSet(false, true)) {
                 mAck.compareAndSet(true, false);
                 mReadCounterLog++;
-//                log.i("enable Read");
+                log.i("enable Read");
 
                 mTimerStart = System.currentTimeMillis();
             }
@@ -207,10 +207,13 @@ public class Device2Gate {
     public void incrementWriteCounter(int count) {
         synchronized (mMyLock) {
             if(mWaitingWriteCounter.get() == -1){
+
                 mWaitingWriteCounter.addAndGet(count+1);
+                log.i("incrementWriteCounter 1:  "+ mWaitingWriteCounter.get());
 
             }else{
                 mWaitingWriteCounter.addAndGet(count);
+                log.i("incrementWriteCounter 2:  "+ mWaitingWriteCounter.get());
 
             }
 
