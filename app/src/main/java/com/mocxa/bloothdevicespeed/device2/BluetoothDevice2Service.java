@@ -78,6 +78,7 @@ public class BluetoothDevice2Service {
 
     private boolean mIsSendingSetup = false;
 
+    private boolean mHoldHeartBeat = false;
 
     public BluetoothDevice2Service(BluetoothAdapter pAdapter, Handler pHandler) {
         mAdapter = pAdapter;
@@ -554,6 +555,9 @@ public class BluetoothDevice2Service {
 
     private void periodicSend() {
         new Handler(mSendThread.getLooper()).post(() -> {
+            if(mHoldHeartBeat){
+                return;
+            }
 //            mDevice2Gate.incrementWriteCounter(1);
             mDevice2SenderThread.sendMessage(DeviceCommands.HEART_BEAT);
 
@@ -654,6 +658,11 @@ public class BluetoothDevice2Service {
 //        mReceiverService?.let { mEventErrorMessage.removeSource(it.mEventErrorMessage) }
         mReceiverService = null;
         mProcessingThread = null;
+
+    }
+
+    public void holdHeartBeat() {
+        mHoldHeartBeat =  true;
 
     }
 

@@ -48,6 +48,7 @@ public class Device2Activity extends AppCompatActivity {
 
     private boolean isAlreadySearched = false;
 
+
     ActivityResultLauncher mActivityResultBluetoothEnable =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
 //                info{"mActivityResultSignin: ${result.data}"}
@@ -173,26 +174,18 @@ public class Device2Activity extends AppCompatActivity {
         });
 
         vBinding.device2Counter.setOnClickListener(v -> {
-            String logStr = mBluetoothService.logService();
-
-            String currentMessage = mCurrentMessage;
-            int readBytes = mReadBytes;
-            if (currentMessage != null) {
-                Log.i("mainActivity: ", "mCurrentMessage 1");
-                logStr = logStr +
-                        "  \n readBytesCounter: " +
-                        readBytes +
-                        " \n last message: " +
-                        currentMessage;
-
-            }
-//            Log.i("mainActivity: ", logStr);
-
-            log.i(logStr);
-            mBluetoothService.resetCounterLog();
-            vBinding.device2CounterLog.setText(logStr);
+            logCounters();
 
         });
+
+        vBinding.device2WithoutSend.setOnClickListener(v -> {
+            mBluetoothService.holdHeartBeat();
+
+            new Handler().postDelayed(this::logCounters, 300);
+            new Handler().postDelayed(this::logCounters, 8000);
+
+        });
+
 
         setupBluetooth();
     }
@@ -246,6 +239,27 @@ public class Device2Activity extends AppCompatActivity {
 
         }
 
+    }
+
+    private void logCounters() {
+        String logStr = mBluetoothService.logService();
+
+        String currentMessage = mCurrentMessage;
+        int readBytes = mReadBytes;
+        if (currentMessage != null) {
+            Log.i("mainActivity: ", "mCurrentMessage 1");
+            logStr = logStr +
+                    "  \n readBytesCounter: " +
+                    readBytes +
+                    " \n last message: " +
+                    currentMessage;
+
+        }
+//            Log.i("mainActivity: ", logStr);
+
+        log.i(logStr);
+        mBluetoothService.resetCounterLog();
+        vBinding.device2CounterLog.setText(logStr);
     }
 
     private void setupBluetooth() {
@@ -341,7 +355,7 @@ public class Device2Activity extends AppCompatActivity {
         mBluetoothService.mEventNackError.observe(this, new LiveDataObserver<String>(
                 data -> {
 
-                    if(data!=null){
+                    if (data != null) {
                         showDialogNackError(data);
                     }
 
@@ -351,7 +365,7 @@ public class Device2Activity extends AppCompatActivity {
         mBluetoothService.mEventMessage.observe(this, new LiveDataObserver<String>(
                 data -> {
 
-                    if(data!=null){
+                    if (data != null) {
                         Toast.makeText(
                                 Device2Activity.this, data,
                                 Toast.LENGTH_SHORT

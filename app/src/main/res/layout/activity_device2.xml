@@ -126,6 +126,13 @@
 
         <Button
 
+            android:id="@+id/device2_without_send"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Without Send" />
+
+        <Button
+
             android:id="@+id/device2_counter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
