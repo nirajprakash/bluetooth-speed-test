@@ -24,7 +24,10 @@ import com.vmadalin.easypermissions.EasyPermissions;
 import com.vmadalin.easypermissions.annotations.AfterPermissionGranted;
 import com.vmadalin.easypermissions.dialogs.SettingsDialog;
 
+import java.io.DataInputStream;
 import java.util.List;
+
+import javax.microedition.io.Connector;
 
 public class MainActivity extends AppCompatActivity implements
         EasyPermissions.PermissionCallbacks {
@@ -182,6 +185,11 @@ public class MainActivity extends AppCompatActivity implements
                     Manifest.permission.ACCESS_FINE_LOCATION
             );
         }
+    }
+
+    private void er(){
+//        DataInputStream ds;
+
     }
 
 
