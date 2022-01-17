@@ -184,6 +184,9 @@ public class EEGDeviceGate {
     }
 
     public void enableWrite() {
+
+
+        log.i("enableWrite 1: ");
         enableWrite(System.currentTimeMillis());
     }
 
@@ -198,6 +201,8 @@ public class EEGDeviceGate {
         }
         if (mWriteActive.compareAndSet(false, true)) {
             mWriteStartTime = currentTime;
+
+            log.i("enableWrite 2: ");
 //            log.i("enable Write");
             mWriteCounterLog++;
 
@@ -208,10 +213,13 @@ public class EEGDeviceGate {
     private boolean shouldWrite() {
         if (mIsSetupMode.get()) {
             if (mNack.get()) {
+
+                log.i("shouldWrite 1: ");
                 return false;
             }
 
             if (!mAck.get()) {
+                log.i("shouldWrite 2: ");
                 return false;
             }
 
