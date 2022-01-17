@@ -301,7 +301,7 @@ public class EEGDeviceGate {
                 }
 
 
-            }, 100L);
+            }, 10L);
         } else if (mWaitingWriteCounter.get() > 1) {
 
             int value = mWaitingWriteCounter.decrementAndGet();

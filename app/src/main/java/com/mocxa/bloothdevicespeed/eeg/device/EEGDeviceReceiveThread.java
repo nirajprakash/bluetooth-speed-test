@@ -169,25 +169,28 @@ public class EEGDeviceReceiveThread extends Thread {
         int byteInt;
 //        int zeroD = -1;
         boolean end =false;
-        while (!end) {
+        int availableBytes = mInputStream.available();
+        if (availableBytes > 0) {
+            while (!end) {
 
-            byteInt = mInputStream.read();
-            if(byteInt == 0x0d){
-                end = true;
-                byteArrayOutputStream.write(byteInt);
-                byteLength++;
-            }else if(byteInt == -1){
-                end =  true;
-            }else{
+                byteInt = mInputStream.read();
+                if (byteInt == 0x0d) {
+                    end = true;
+                    byteArrayOutputStream.write(byteInt);
+                    byteLength++;
+                } else if (byteInt == -1) {
+                    end = true;
+                } else {
 
-                byteArrayOutputStream.write(byteInt);
-                byteLength++;
-            }
+                    byteArrayOutputStream.write(byteInt);
+                    byteLength++;
+                }
 
 //            if(System.currentTimeMillis()%1000 == 0){
 ////                log.i("reading: "+ byteLength);
 //            }
 
+            }
         }
 
         mByteCounter += byteLength;
