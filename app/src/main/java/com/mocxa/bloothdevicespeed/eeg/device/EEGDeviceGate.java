@@ -218,10 +218,10 @@ public class EEGDeviceGate {
                 return false;
             }
 
-            if (!mAck.get()) {
+            /*if (!mAck.get()) {
                 log.i("shouldWrite 2: ");
                 return false;
-            }
+            }*/
 
 
         } else {
