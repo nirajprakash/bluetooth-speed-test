@@ -64,7 +64,8 @@ public class DeviceCommands {
         String data1 = sb2.toString();
         String hexData = stringToHexadecimal(data1);
         String deciData1Str= HexatoDecimal(hexData);
-        return deciData1Str;
+        int index=NoOfChnls+32;
+        return "28,32,32,119,33,"+ index +"," + deciData1Str + "13";
     }
 
     public static String deciData2(){
