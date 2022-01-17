@@ -1,4 +1,7 @@
-package com.mocxa.bloothdevicespeed.device2;
+package com.mocxa.bloothdevicespeed.eeg;
+
+import com.mocxa.bloothdevicespeed.eeg.model.ModelPacketEventAck;
+import com.mocxa.bloothdevicespeed.eeg.model.ModelPacketEventNack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +9,7 @@ import java.util.List;
 /**
  * Created by Niraj on 11-01-2022.
  */
-public class ModelPacket {
+public class EEGModelPacket {
 
     public int partialPacketFirstPartLength= 0;
     public boolean eegSpecialpacketStatus = false;
@@ -14,11 +17,11 @@ public class ModelPacket {
     public List<ModelPacketEventAck> ackEvents = new ArrayList<>();
     public List<ModelPacketEventNack> nackEvents = new ArrayList<>();
 
-    long processingTimePeriod =0;
+    public long processingTimePeriod =0;
 
-    int partialPacketLastPartLength = 0;
+    public int partialPacketLastPartLength = 0;
 
-    List<int[]> eegGraphPacketList=  new ArrayList<>();
+    public List<int[]> eegGraphPacketList=  new ArrayList<>();
 
 
 }

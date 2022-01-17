@@ -1,16 +1,15 @@
-package com.mocxa.bloothdevicespeed.device2;
+package com.mocxa.bloothdevicespeed.eeg;
 
-import android.util.Log;
+import com.mocxa.bloothdevicespeed.eeg.model.ModelPacketEventAck;
+import com.mocxa.bloothdevicespeed.eeg.model.ModelPacketEventNack;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
  * Created by Niraj on 11-01-2022.
  */
-public class PacketHelper {
+public class EEGPacketHelper {
 
     public static final byte[] eegZeroPacket = {(byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20,
             (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20, (byte) 0x20,
@@ -356,36 +355,36 @@ public class PacketHelper {
         return validPacket;
     }
 
-    public static ModelPacket processBuffer(byte[] databuf, int channel_nos, byte[] eegSpecialPacket,
-                                            boolean prevEegSpecialpacketStatus,
-                                            int prevPartialPacketFirstPartLength,
-                                            int prevPartialPacketLastPartLength) {
+    public static EEGModelPacket processBuffer(byte[] databuf, int channel_nos, byte[] eegSpecialPacket,
+                                               boolean prevEegSpecialpacketStatus,
+                                               int prevPartialPacketFirstPartLength,
+                                               int prevPartialPacketLastPartLength) {
 
-        ModelPacket modelPacket = new ModelPacket();
+        EEGModelPacket EEGModelPacket = new EEGModelPacket();
         List<int[]> eegGraphPacketList = new ArrayList<>();
-        modelPacket.eegGraphPacketList = eegGraphPacketList;
+        EEGModelPacket.eegGraphPacketList = eegGraphPacketList;
 
         int partialPacketFirstPartLength = prevPartialPacketFirstPartLength;
-        modelPacket.partialPacketFirstPartLength = prevPartialPacketFirstPartLength;
+        EEGModelPacket.partialPacketFirstPartLength = prevPartialPacketFirstPartLength;
 
         int partialPacketLastPartLength = prevPartialPacketLastPartLength;
-        modelPacket.partialPacketLastPartLength = prevPartialPacketLastPartLength;
+        EEGModelPacket.partialPacketLastPartLength = prevPartialPacketLastPartLength;
 
         boolean eegSpecialpacketStatus = prevEegSpecialpacketStatus;
-        modelPacket.eegSpecialpacketStatus = prevEegSpecialpacketStatus;
+        EEGModelPacket.eegSpecialpacketStatus = prevEegSpecialpacketStatus;
 
         List<String> patientEvents = new ArrayList<>();
-        modelPacket.patientEvents = patientEvents;
+        EEGModelPacket.patientEvents = patientEvents;
 
         List<ModelPacketEventAck> ackEvents = new ArrayList<>();
-        modelPacket.ackEvents = ackEvents;
+        EEGModelPacket.ackEvents = ackEvents;
 
         List<ModelPacketEventNack> nackEvents = new ArrayList<>();
-        modelPacket.nackEvents = nackEvents;
+        EEGModelPacket.nackEvents = nackEvents;
 
         int packetSize = 0;
 
-        if (databuf == null) return modelPacket;
+        if (databuf == null) return EEGModelPacket;
 
 
         Long startTimeNano = System.nanoTime();
@@ -2445,11 +2444,11 @@ public class PacketHelper {
         Long endTimeNano = System.nanoTime();
 
 
-        modelPacket.processingTimePeriod = (endTimeNano - startTimeNano);
+        EEGModelPacket.processingTimePeriod = (endTimeNano - startTimeNano);
 
-        modelPacket.eegGraphPacketList = eegGraphPacketList;
-        modelPacket.patientEvents = patientEvents;
-        return modelPacket;
+        EEGModelPacket.eegGraphPacketList = eegGraphPacketList;
+        EEGModelPacket.patientEvents = patientEvents;
+        return EEGModelPacket;
 
 
     }

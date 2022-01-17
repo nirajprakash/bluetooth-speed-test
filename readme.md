@@ -10,3 +10,7 @@
 
 # write flush
 - https://stackoverflow.com/questions/12307423/bluetoothsocket-stops-transmitting-on-outputstream-write
+
+
+# permission
+- https://developer.android.com/guide/topics/connectivity/bluetooth/permissions

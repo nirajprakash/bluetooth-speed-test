@@ -1,4 +1,4 @@
-package com.mocxa.bloothdevicespeed.device2;
+package com.mocxa.bloothdevicespeed.eeg.device;
 
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -9,24 +9,23 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Created by Niraj on 09-01-2022.
+ * Created by Niraj on 17-01-2022.
  */
-public class Device2Gate {
-
+public class EEGDeviceGate {
 
     private UtilLogger log = UtilLogger.with(this);
 
     public AtomicBoolean mReadActive = new AtomicBoolean(false);
     public AtomicBoolean mWriteActive = new AtomicBoolean(false);
     public AtomicBoolean mAck = new AtomicBoolean(false);
-
     public AtomicBoolean mNack = new AtomicBoolean(false);
 
     final Object mMyLock = new Object();
 
     AtomicInteger mWaitingWriteCounter = new AtomicInteger(-1);
-    boolean waitingWrite = true;
 
+    public AtomicBoolean mIsSetupMode = new AtomicBoolean(true);
+    public AtomicBoolean mAllowReadMode = new AtomicBoolean(false);
 //    private final long WRITE_MAX_PERIOD = 5L;
 //    private final long READ_MIN_PERIOD = 80L;
 
@@ -62,6 +61,26 @@ public class Device2Gate {
 
     }
 
+    public void holdReadForced() {
+        if (mReadActive.get()) {
+
+            if (mIsSetupMode.get()) {
+                long currentTime = System.currentTimeMillis();
+                long periodRead = currentTime - mTimerStart;
+                allowRead(false);
+//            if (periodRead > READ_MIN_PERIOD) {
+                if (mReadActive.compareAndSet(true, false)) {
+
+                    mReadPeriodLog += periodRead;
+//                log.i("hold Read");
+                }
+            }
+
+
+        }
+
+    }
+
     public void enableRead() {
 
         if (mWriteActive.get()) {
@@ -70,6 +89,10 @@ public class Device2Gate {
         if (mWaitingWriteCounter.get() != 0) {
             return;
         }
+        if (!shouldRead()) {
+            return;
+        }
+
         if (mReadActive.compareAndSet(false, true)) {
             mAck.compareAndSet(true, false);
             mReadCounterLog++;
@@ -79,6 +102,27 @@ public class Device2Gate {
         }
 
 
+    }
+
+    private boolean shouldRead() {
+        if (mIsSetupMode.get()) {
+
+            if (!mAllowReadMode.get()) {
+                return false;
+            }
+
+            if (mNack.get()) {
+                return false;
+            }
+
+            if (mAck.get()) {
+                return false;
+            }
+
+        } else {
+            return true;
+        }
+        return true;
     }
 
     public void acknowledge() {
@@ -102,25 +146,14 @@ public class Device2Gate {
         }
     }
 
-    public AtomicBoolean getReadActive() {
-        return mReadActive;
+    public void allowRead(boolean allow) {
+        mAllowReadMode.compareAndSet(!allow, allow);
     }
 
-    public AtomicBoolean getWriteActive() {
-        return mWriteActive;
+    public void toggleSetup(boolean isSetting){
+        mIsSetupMode.compareAndSet(!isSetting, isSetting);
     }
 
-    public Object getMyLock() {
-        return mMyLock;
-    }
-
-    public AtomicBoolean getAck() {
-        return mAck;
-    }
-
-    public AtomicBoolean getNack() {
-        return mNack;
-    }
 
     public void holdWrite() {
         synchronized (mMyLock) {
@@ -157,6 +190,10 @@ public class Device2Gate {
         if (mReadActive.get()) {
             return;
         }
+
+        if (!shouldWrite()) {
+            return;
+        }
         if (mWriteActive.compareAndSet(false, true)) {
             mWriteStartTime = currentTime;
 //            log.i("enable Write");
@@ -165,6 +202,49 @@ public class Device2Gate {
         }
 
     }
+
+    private boolean shouldWrite() {
+        if (mIsSetupMode.get()) {
+            if (mNack.get()) {
+                return false;
+            }
+
+            if (!mAck.get()) {
+                return false;
+            }
+
+
+        } else {
+            return true;
+        }
+
+        return true;
+    }
+
+    public AtomicBoolean getReadActive() {
+        return mReadActive;
+    }
+
+    public AtomicBoolean getWriteActive() {
+        return mWriteActive;
+    }
+
+    public Object getMyLock() {
+        return mMyLock;
+    }
+
+    public AtomicBoolean getAck() {
+        return mAck;
+    }
+
+    public AtomicBoolean getNack() {
+        return mNack;
+    }
+
+
+    /* ******************************************************************************
+     *                                   log
+     */
 
 
     public void resetLog() {
@@ -201,6 +281,9 @@ public class Device2Gate {
             new Handler(thread.getLooper()).postDelayed(() -> {
 
                 if (mWaitingWriteCounter.compareAndSet(1, 0)) {
+                    if(mIsSetupMode.get()){
+                        allowRead(true);
+                    }
                     log.i("decrementWriteCounter end: " + 0);
                 } else {
                     log.i("decrementWriteCounter end: ");
@@ -237,4 +320,6 @@ public class Device2Gate {
         return true;
 
     }
+
+
 }

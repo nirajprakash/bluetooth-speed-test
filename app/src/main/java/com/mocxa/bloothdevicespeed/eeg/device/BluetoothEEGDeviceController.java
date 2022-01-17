@@ -1,4 +1,4 @@
-package com.mocxa.bloothdevicespeed.device2;
+package com.mocxa.bloothdevicespeed.eeg.device;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -15,10 +15,10 @@ import com.mocxa.bloothdevicespeed.BluetoothConstants;
 import com.mocxa.bloothdevicespeed.common.AcceptThread;
 import com.mocxa.bloothdevicespeed.common.ConnectThread;
 import com.mocxa.bloothdevicespeed.device.DeviceCommands;
-import com.mocxa.bloothdevicespeed.eeg.EEGPacketHelper;
-import com.mocxa.bloothdevicespeed.eeg.EEGModelPacket;
 import com.mocxa.bloothdevicespeed.eeg.model.ModelPacketEventAck;
 import com.mocxa.bloothdevicespeed.eeg.model.ModelPacketEventNack;
+import com.mocxa.bloothdevicespeed.eeg.EEGModelPacket;
+import com.mocxa.bloothdevicespeed.eeg.EEGPacketHelper;
 import com.mocxa.bloothdevicespeed.tools.UtilLogger;
 import com.mocxa.bloothdevicespeed.tools.livedata.LiveDataEvent;
 
@@ -28,9 +28,9 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * Created by Niraj on 09-01-2022.
+ * Created by Niraj on 17-01-2022.
  */
-public class BluetoothDevice2Service {
+public class BluetoothEEGDeviceController {
 
     private UtilLogger log = UtilLogger.with(this);
     private BluetoothSocket mSocket = null;
@@ -42,8 +42,8 @@ public class BluetoothDevice2Service {
 
     //    private var mInsecureAcceptThread: AcceptThread? = null
     private ConnectThread mConnectThread = null;
-    private Device2SenderThread mDevice2SenderThread = null;
-    private Device2ReceiveThread mReceiverService = null;
+    private EEGDeviceSenderThread mDeviceSenderThread = null;
+    private EEGDeviceReceiveThread mReceiverService = null;
 
     private ProcessingThread mProcessingThread = null;
 
@@ -74,7 +74,7 @@ public class BluetoothDevice2Service {
     MediatorLiveData<LiveDataEvent<BluetoothSocket>> mEventConnectedMediator = new MediatorLiveData<LiveDataEvent<BluetoothSocket>>();
 
 
-    private Device2Gate mDevice2Gate = new Device2Gate();
+    private EEGDeviceGate mDeviceGate = new EEGDeviceGate();
     boolean mIsReceiving = true;
 
 
@@ -85,7 +85,7 @@ public class BluetoothDevice2Service {
 
     private boolean mHoldHeartBeat = false;
 
-    public BluetoothDevice2Service(BluetoothAdapter pAdapter, Handler pHandler) {
+    public BluetoothEEGDeviceController(BluetoothAdapter pAdapter, Handler pHandler) {
         mAdapter = pAdapter;
         mReadHandler = pHandler;
 
@@ -123,8 +123,8 @@ public class BluetoothDevice2Service {
 
         }
 
-        if(mDevice2Gate!=null){
-            mDevice2Gate.logGate();
+        if(mDeviceGate!=null){
+            mDeviceGate.logGate();
         }
         if(TextUtils.isEmpty(logMessage)){
             return "No result";
@@ -140,8 +140,8 @@ public class BluetoothDevice2Service {
             mReceiverService.resetLog();
         }
 
-        if(mDevice2Gate!=null){
-            mDevice2Gate.resetLog();
+        if(mDeviceGate!=null){
+            mDeviceGate.resetLog();
         }
     }
 
@@ -258,7 +258,7 @@ public class BluetoothDevice2Service {
             mProcessingThread = new ProcessingThread();
             mProcessingThread.start();
 
-            mReceiverService = new Device2ReceiveThread(mSocket, mReadHandler, mDevice2Gate);
+            mReceiverService = new EEGDeviceReceiveThread(mSocket, mReadHandler, mDeviceGate);
 
             if (mState == BluetoothConstants.STATE_CONNECTED) {
                 mReceiverService.toggleConnected(true);
@@ -279,15 +279,15 @@ public class BluetoothDevice2Service {
         if (mSocket != null) {
             Log.i("Bluetooth Service: ", "setupSender");
 
-            mDevice2SenderThread = new Device2SenderThread(mSocket, mDevice2Gate, mSendThread);
+            mDeviceSenderThread = new EEGDeviceSenderThread(mSocket, mDeviceGate, mSendThread);
             if (mState == BluetoothConstants.STATE_CONNECTED) {
-                mDevice2SenderThread.toggleConnected(true);
+                mDeviceSenderThread.toggleConnected(true);
             } else {
-                mDevice2SenderThread.toggleConnected(false);
+                mDeviceSenderThread.toggleConnected(false);
 
             }
-            mDevice2SenderThread.start();
-//       TODO     mDevice2SenderThread.setupHandler();
+            mDeviceSenderThread.start();
+//       TODO     mDeviceSenderThread.setupHandler();
             return true;
         } else {
             return false;
@@ -298,7 +298,7 @@ public class BluetoothDevice2Service {
      *                                    Packet Setup
      */
     public void sendSetup() {
-        if (mDevice2SenderThread == null || mSendThread == null) return;
+        if (mDeviceSenderThread == null || mSendThread == null) return;
 
         mSetupQueue.clear();
 
@@ -347,100 +347,32 @@ public class BluetoothDevice2Service {
         mIsSendingSetup =  true;
 
         new Handler(mSendThread.getLooper()).postDelayed(() -> {
-            if (mDevice2SenderThread != null) {
+            if (mDeviceSenderThread != null) {
                 String nextMessage = mSetupQueue.peek();
                 if (nextMessage != null) {
                     log.i("send Message Setup 1: ");
 
-                    mDevice2Gate.incrementWriteCounter(1);
-                    mDevice2SenderThread.sendMessage(nextMessage);
+                    mDeviceGate.incrementWriteCounter(1);
+                    mDeviceSenderThread.sendMessage(nextMessage);
                 }
 
             }
         }, 100L);
-
-
-
-        /*
-        new Handler(mSendThread.getLooper()).postDelayed(() -> {
-
-            TODO
-            String message = DeviceCommands.INITIAL_HEART_BEAT;
-            mDevice2SenderThread.sendMessage(message);
-            log.i("SendSetup :  " + message);
-
-            message = DeviceCommands.HEART_BEAT;
-            mDevice2SenderThread.sendMessage(message);
-            log.i("SendSetup :  " + message);
-
-            message = DeviceCommands.deciData1();
-            mDevice2SenderThread.sendMessage(message);
-            log.i("SendSetup deci1:  " + message);
-
-
-            message = DeviceCommands.deciData2();
-            mDevice2SenderThread.sendMessage(message);
-            log.i("SendSetup deci2:  " + message);
-
-            message = DeviceCommands.deciData3();
-            mDevice2SenderThread.sendMessage(message);
-            log.i("SendSetup deci3:  " + message);
-
-            message = DeviceCommands.deciData4();
-            mDevice2SenderThread.sendMessage(message);
-            log.i("SendSetup deci4:  " + message);
-
-            message = DeviceCommands.deciData5();
-            mDevice2SenderThread.sendMessage(message);
-            log.i("SendSetup deci5:  " + message);
-
-            message = DeviceCommands.deciData6();
-            mDevice2SenderThread.sendMessage(message);
-            log.i("SendSetup deci6:  " + message);
-
-
-            message = DeviceCommands.deciData7();
-            mDevice2SenderThread.sendMessage(message);
-            log.i("SendSetup deci7:  " + message);
-
-            message = DeviceCommands.deciData8();
-            mDevice2SenderThread.sendMessage(message);
-            log.i("SendSetup deci8:  " + message);
-
-            message = DeviceCommands.deciData9();
-            mDevice2SenderThread.sendMessage(message);
-            log.i("SendSetup deci9:  " + message);
-
-            message = DeviceCommands.deciData10();
-            mDevice2SenderThread.sendMessage(message);
-            log.i("SendSetup deci10:  " + message);
-
-            message = DeviceCommands.deciData11();
-            mDevice2SenderThread.sendMessage(message);
-            log.i("SendSetup deci11:  " + message);
-
-
-            message = DeviceCommands.END_ONGOING;
-            mDevice2SenderThread.sendMessage(message);
-            log.i("SendSetup end:  " + message);
-
-        }, 100);
-        */
-
 
     }
 
 
     private void sendSetupRetryMessage() {
         new Handler(mSendThread.getLooper()).post(() -> {
-            if (mDevice2SenderThread != null) {
+            if (mDeviceSenderThread != null) {
                 String nextMessage = mSetupQueue.peek();
                 if (nextMessage != null) {
 
-                    mDevice2Gate.incrementWriteCounter(1);
-                    mDevice2SenderThread.sendMessage(nextMessage);
+                    mDeviceGate.incrementWriteCounter(1);
+                    mDeviceSenderThread.sendMessage(nextMessage);
                 }else{
                     mIsSendingSetup = false;
+                    mDeviceGate.toggleSetup(false);
                     _mEventMessage.postValue(new LiveDataEvent<>("Setup Sent"));
                 }
 
@@ -450,12 +382,12 @@ public class BluetoothDevice2Service {
 
     private void sendSetupNextMessage() {
         new Handler(mSendThread.getLooper()).post(() -> {
-            if (mDevice2SenderThread != null) {
+            if (mDeviceSenderThread != null) {
                 mSetupQueue.poll();
                 String nextMessage = mSetupQueue.peek();
                 if (nextMessage != null) {
-                    mDevice2Gate.incrementWriteCounter(1);
-                    mDevice2SenderThread.sendMessage(nextMessage);
+                    mDeviceGate.incrementWriteCounter(1);
+                    mDeviceSenderThread.sendMessage(nextMessage);
                 }else{
                     mIsSendingSetup = false;
                     _mEventMessage.postValue(new LiveDataEvent<>("Setup Sent"));
@@ -467,7 +399,7 @@ public class BluetoothDevice2Service {
 
     public void retrySend() {
 
-        mDevice2Gate.setError(false);
+        mDeviceGate.setError(false);
         if(mIsSendingSetup){
             sendSetupRetryMessage();
         }
@@ -492,9 +424,9 @@ public class BluetoothDevice2Service {
         clearReceiver();
 
 
-        if (mDevice2SenderThread != null) {
-            mDevice2SenderThread.toggleConnected(false);
-            mDevice2SenderThread.interrupt();
+        if (mDeviceSenderThread != null) {
+            mDeviceSenderThread.toggleConnected(false);
+            mDeviceSenderThread.interrupt();
         }
 
         clearSender();
@@ -517,18 +449,18 @@ public class BluetoothDevice2Service {
         new Handler(mSendThread.getLooper()).post(() -> {
 
 
-            mDevice2Gate.incrementWriteCounter(3);
+            mDeviceGate.incrementWriteCounter(3);
 
             String message = DeviceCommands.INITIAL_HEART_BEAT;
-            mDevice2SenderThread.sendMessage(message);
+            mDeviceSenderThread.sendMessage(message);
             log.i("startEEG initial:  " + message);
 
 
             message = DeviceCommands.HEART_BEAT;
-            mDevice2SenderThread.sendMessage(message);
+            mDeviceSenderThread.sendMessage(message);
             log.i("startEEG HEART_BEAT:  " + message);
 
-            mDevice2SenderThread.sendMessage(DeviceCommands.IMPEDENCE_OP);
+            mDeviceSenderThread.sendMessage(DeviceCommands.IMPEDENCE_OP);
             log.i("startEEG IMPEDENCE_OP:  " + message);
 
 
@@ -551,11 +483,11 @@ public class BluetoothDevice2Service {
 
 
         new Handler(mSendThread.getLooper()).post(() -> {
-            mDevice2Gate.setError(false);
-            mDevice2Gate.clearAcknowledge();
+            mDeviceGate.setError(false);
+            mDeviceGate.clearAcknowledge();
 
-            mDevice2Gate.incrementWriteCounter(1);
-            mDevice2SenderThread.sendMessage(DeviceCommands.STOP);
+            mDeviceGate.incrementWriteCounter(1);
+            mDeviceSenderThread.sendMessage(DeviceCommands.STOP);
 
             stopChat();
 
@@ -574,17 +506,17 @@ public class BluetoothDevice2Service {
 
             boolean isIncremented = false;
             if (!mTransmissionPacketSent) {
-                isIncremented = mDevice2Gate.incrementWriteCounter(2);
-//                mDevice2Gate.incrementWriteCounter(1);
-                mDevice2SenderThread.sendMessage(DeviceCommands.TRANSMISSION);
+                isIncremented = mDeviceGate.incrementWriteCounter(2);
+//                mDeviceGate.incrementWriteCounter(1);
+                mDeviceSenderThread.sendMessage(DeviceCommands.TRANSMISSION);
 
                 mTransmissionPacketSent = true;
             }else{
-                isIncremented = mDevice2Gate.incrementWriteCounter(1);
+                isIncremented = mDeviceGate.incrementWriteCounter(1);
             }
-//            mDevice2Gate.incrementWriteCounter(1);
+//            mDeviceGate.incrementWriteCounter(1);
             if(isIncremented){
-                mDevice2SenderThread.sendMessage(DeviceCommands.HEART_BEAT);
+                mDeviceSenderThread.sendMessage(DeviceCommands.HEART_BEAT);
             }
 
 
@@ -618,7 +550,7 @@ public class BluetoothDevice2Service {
                     nackEvents.get(0).getStatus() +
                     " \n "+ sentMessage));
         }else{
-            mDevice2Gate.setError(true);
+            mDeviceGate.setError(true);
             _mEventNackError.postValue(new LiveDataEvent<>("NACK:  \n " +
                     nackEvents.get(0).getStatus() +
                     " \n "+ "in other case"));
@@ -630,7 +562,13 @@ public class BluetoothDevice2Service {
         if(mIsSendingSetup){
             sendSetupNextMessage();
         }else{
-            mDevice2Gate.acknowledge();
+            mDeviceGate.acknowledge();
+        }
+    }
+
+    private void onPacketNoAckAndNack() {
+        if(mIsSendingSetup){
+            mDeviceGate.allowRead(true);
         }
     }
 
@@ -660,11 +598,11 @@ public class BluetoothDevice2Service {
 
 
     private void clearSender() {
-        if (mDevice2SenderThread != null) {
-            mDevice2SenderThread.interrupt();
+        if (mDeviceSenderThread != null) {
+            mDeviceSenderThread.interrupt();
         }
 //        mReceiverService?.let { mEventErrorMessage.removeSource(it.mEventErrorMessage) }
-        mDevice2SenderThread = null;
+        mDeviceSenderThread = null;
 
     }
 
@@ -748,6 +686,8 @@ public class BluetoothDevice2Service {
                         onPacketNackEvent(packet.nackEvents);
                     } else if (packet.ackEvents.size() > 0) {
                         onPacketAckEvent(packet.ackEvents);
+                    }else {
+                        onPacketNoAckAndNack();
                     }
 
                 }

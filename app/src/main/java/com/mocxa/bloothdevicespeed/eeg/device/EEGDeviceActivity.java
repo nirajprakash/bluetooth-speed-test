@@ -1,4 +1,4 @@
-package com.mocxa.bloothdevicespeed.device2;
+package com.mocxa.bloothdevicespeed.eeg.device;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -25,9 +25,7 @@ import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.mocxa.bloothdevicespeed.BluetoothConstants;
-import com.mocxa.bloothdevicespeed.common.ReceiveThread;
-import com.mocxa.bloothdevicespeed.databinding.ActivityDevice2Binding;
-import com.mocxa.bloothdevicespeed.device.DeviceActivity;
+import com.mocxa.bloothdevicespeed.databinding.ActivityEegdeviceBinding;
 import com.mocxa.bloothdevicespeed.tools.UtilLogger;
 import com.mocxa.bloothdevicespeed.tools.livedata.LiveDataObserver;
 
@@ -37,17 +35,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Device2Activity extends AppCompatActivity {
+public class EEGDeviceActivity extends AppCompatActivity {
     private UtilLogger log = UtilLogger.with(this);
     private String mCurrentMessage = null;
-    private int mReadBytes = 0;
     private int mSelectedDeviceIndex = -1;
+    private int mReadBytes = 0;
+
     BluetoothAdapter mBluetoothAdapter = null;
-
-    BluetoothDevice2Service mBluetoothService = null;
-
     private boolean isAlreadySearched = false;
 
+    BluetoothEEGDeviceController mBluetoothService = null;
 
     ActivityResultLauncher mActivityResultBluetoothEnable =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -107,14 +104,14 @@ public class Device2Activity extends AppCompatActivity {
                 } else {
                     if (mNewDevicesArrayAdapter.size() == 0) {
                         Toast.makeText(
-                                Device2Activity.this,
+                                EEGDeviceActivity.this,
                                 "no result found",
                                 Toast.LENGTH_SHORT
                         ).show();
 
-                        vBinding.device2SearchLog.setText("No device found");
+                        vBinding.eegDeviceSearchLog.setText("No device found");
                     } else {
-                        vBinding.device2SearchLog.setText("Search compete");
+                        vBinding.eegDeviceSearchLog.setText("Search compete");
                         showDialogResolutionSelect();
                     }
                     if (mBluetoothAdapter != null) {
@@ -129,57 +126,56 @@ public class Device2Activity extends AppCompatActivity {
         }
     };
 
-
-    private ActivityDevice2Binding vBinding;
+    private ActivityEegdeviceBinding vBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        vBinding = ActivityDevice2Binding.inflate(getLayoutInflater());
+        vBinding = ActivityEegdeviceBinding.inflate(getLayoutInflater());
         View view = vBinding.getRoot();
         setContentView(view);
-        vBinding.device2Search.setOnClickListener(v -> {
-            vBinding.device2SearchLog.setText("Searching");
+        vBinding.eegDeviceSearch.setOnClickListener(v -> {
+            vBinding.eegDeviceSearchLog.setText("Searching");
             bluetoothSearchSetup();
 
         });
 
-        vBinding.device2SearchCancel.setOnClickListener(v -> {
+        vBinding.eegDeviceSearchCancel.setOnClickListener(v -> {
             Log.i("MainActivity", "blSearchCancel: ");
             if (mBluetoothAdapter.isDiscovering()) {
                 mBluetoothAdapter.cancelDiscovery();
             }
         });
 
-        vBinding.device2SendReceive.setOnClickListener(v -> {
-            vBinding.device2SendReceiveFreqLog.setText("..");
+        vBinding.eegDeviceSendReceive.setOnClickListener(v -> {
+            vBinding.eegDeviceSendReceiveFreqLog.setText("..");
             mBluetoothService.setupSendReceive();
 
         });
 
-        vBinding.device2SendSetup.setOnClickListener(v -> {
-            /*vBinding.device2SendFreqLog.setText("..");
+        vBinding.eegDeviceSendSetup.setOnClickListener(v -> {
+            /*vBinding.eegDeviceSendFreqLog.setText("..");
             mBluetoothService.setupSender();*/
             mBluetoothService.sendSetup();
         });
 
-        vBinding.device2StartEeg.setOnClickListener(v -> {
+        vBinding.eegDeviceStartEeg.setOnClickListener(v -> {
             mBluetoothService.startEEG();
         });
 
-        vBinding.device2Stop.setOnClickListener(v -> {
+        vBinding.eegDeviceStop.setOnClickListener(v -> {
             mBluetoothService.stopEEG();
 /*            mBluetoothService.stopChat();
             mReadBytes = 0;
             mCurrentMessage = null;*/
         });
 
-        vBinding.device2Counter.setOnClickListener(v -> {
+        vBinding.eegDeviceCounter.setOnClickListener(v -> {
             logCounters();
 
         });
 
-        vBinding.device2WithoutSend.setOnClickListener(v -> {
+        vBinding.eegDeviceWithoutSend.setOnClickListener(v -> {
             mBluetoothService.holdHeartBeat();
 
             new Handler().postDelayed(this::logCounters, 300);
@@ -259,7 +255,7 @@ public class Device2Activity extends AppCompatActivity {
 //            Log.i("mainActivity: ", logStr);
 
 //        log.i(logStr);
-        vBinding.device2CounterLog.setText(logStr);
+        vBinding.eegDeviceCounterLog.setText(logStr);
         mBluetoothService.resetCounterLog();
     }
 
@@ -286,7 +282,7 @@ public class Device2Activity extends AppCompatActivity {
                         "handleMessage " + msg.what + " in " +
                                 (msg.obj != null)
                 );*/
-                if (msg.what == Device2ReceiveThread.MESSAGE_READ) {
+                if (msg.what == EEGDeviceReceiveThread.MESSAGE_READ) {
                     /*Log.d(
                             "MainActivity",
                             "handleMessage in"
@@ -302,8 +298,7 @@ public class Device2Activity extends AppCompatActivity {
                         String readMessage = new String(readBuf, 0, msg.arg1);
                         mCurrentMessage = readMessage;*/
                         mReadBytes += msg.arg1;
-                       /*
-                       TODO uncomment
+
                        ByteArrayOutputStream byteArrayOutputStream = (ByteArrayOutputStream) msg.obj;
                         byte[] readBuf = byteArrayOutputStream.toByteArray();
 //                        log.i( "read Message 1:");
@@ -316,7 +311,7 @@ public class Device2Activity extends AppCompatActivity {
 //                            Log.d("Live Graph", "");
                             mBluetoothService.onBytes(readBuf);
 //                            packetQueue.add(readBuf);
-                        }*/
+                        }
 
                     }
                 }
@@ -328,12 +323,12 @@ public class Device2Activity extends AppCompatActivity {
             }
 
         };
-        mBluetoothService = new BluetoothDevice2Service(mBluetoothAdapter, readerHandler);
+        mBluetoothService = new BluetoothEEGDeviceController(mBluetoothAdapter, readerHandler);
 
         mBluetoothService.mEventErrorMessage.observe(this,
                 new LiveDataObserver<String>(data -> {
                     Toast.makeText(
-                            Device2Activity.this,
+                            EEGDeviceActivity.this,
                             data,
                             Toast.LENGTH_SHORT
                     ).show();
@@ -348,11 +343,11 @@ public class Device2Activity extends AppCompatActivity {
 
         mBluetoothService.mEventConnected.observe(this, new LiveDataObserver<BluetoothSocket>(data -> {
             Toast.makeText(
-                    Device2Activity.this,
+                    EEGDeviceActivity.this,
                     "Connected",
                     Toast.LENGTH_SHORT
             ).show();
-            vBinding.device2ConnectLog.setText("Connected");
+            vBinding.eegDeviceConnectLog.setText("Connected");
         }));
 
         mBluetoothService.mEventNackError.observe(this, new LiveDataObserver<String>(
@@ -370,7 +365,7 @@ public class Device2Activity extends AppCompatActivity {
 
                     if (data != null) {
                         Toast.makeText(
-                                Device2Activity.this, data,
+                                EEGDeviceActivity.this, data,
                                 Toast.LENGTH_SHORT
                         ).show();
 
@@ -473,7 +468,7 @@ public class Device2Activity extends AppCompatActivity {
 
             mNewDevicesArrayAdapter.addAll(pairedDevices);
 
-            vBinding.device2PairedLog.setText("Paired Device: " + pairedDevices.size());
+            vBinding.eegDevicePairedLog.setText("Paired Device: " + pairedDevices.size());
 
         }
 
@@ -525,4 +520,6 @@ public class Device2Activity extends AppCompatActivity {
 
 
     }
+
+
 }

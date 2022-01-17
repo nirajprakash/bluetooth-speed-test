@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.mocxa.bloothdevicespeed.databinding.ActivityMainBinding;
 import com.mocxa.bloothdevicespeed.device.DeviceActivity;
 import com.mocxa.bloothdevicespeed.device2.Device2Activity;
+import com.mocxa.bloothdevicespeed.eeg.device.EEGDeviceActivity;
 import com.mocxa.bloothdevicespeed.mobile.BluetoothMobileService;
 import com.mocxa.bloothdevicespeed.mobile.MobileActivity;
 import com.vmadalin.easypermissions.EasyPermissions;
@@ -56,6 +57,10 @@ public class MainActivity extends AppCompatActivity implements
         vBinding.mainMobileDevice2.setOnClickListener(v -> {
             startActivityMobileDevice2();
         });
+
+        vBinding.mainMobileEegdevice.setOnClickListener(v -> {
+            startActivityEEGDevice();
+        });
 //        setContentView(R.layout.activity_main);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
@@ -81,6 +86,10 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
+    private void startActivityEEGDevice() {
+        startActivity(new Intent(this, EEGDeviceActivity.class));
+
+    }
     @Override
     public void onPermissionsDenied(int i, @NonNull List<String> list) {
         Log.i("MainActivity", "onPermissionsDenied");
@@ -121,11 +130,12 @@ public class MainActivity extends AppCompatActivity implements
         Manifest.permission.ACCESS_FINE_LOCATION
         * */
 
-        if (EasyPermissions.hasPermissions(this,  Manifest.permission.BLUETOOTH_ADMIN,
-                Manifest.permission.BLUETOOTH,
+        if (EasyPermissions.hasPermissions(this,
+                Manifest.permission.BLUETOOTH_SCAN,
                 Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH_ADVERTISE,
 
-                Manifest.permission.ACCESS_COARSE_LOCATION,
+
                 Manifest.permission.ACCESS_FINE_LOCATION)) {
             // Already have permission, do the thing
             // ...
@@ -140,10 +150,11 @@ public class MainActivity extends AppCompatActivity implements
                      this,
                      "Need Permission",
                      REQUEST_CODE_PERMISSION,
-                    Manifest.permission.BLUETOOTH_ADMIN,
-                    Manifest.permission.BLUETOOTH,
+
+                    Manifest.permission.BLUETOOTH_SCAN,
                     Manifest.permission.BLUETOOTH_CONNECT,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.BLUETOOTH_ADVERTISE,
+
                     Manifest.permission.ACCESS_FINE_LOCATION
             );
         }

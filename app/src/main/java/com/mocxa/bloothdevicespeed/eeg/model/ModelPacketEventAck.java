@@ -1,4 +1,4 @@
-package com.mocxa.bloothdevicespeed.device2;
+package com.mocxa.bloothdevicespeed.eeg.model;
 
 /**
  * Created by Niraj on 11-01-2022.

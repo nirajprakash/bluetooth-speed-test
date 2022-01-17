@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?colorSurface"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+
+                android:id="@+id/eeg_device_search"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Search" />
+            <Button
+
+                android:id="@+id/eeg_device_search_cancel"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="cancel" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+        <TextView
+            android:id="@+id/eeg_device_search_log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="...." />
+
+        <TextView
+            android:id="@+id/eeg_device_paired_log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="...." />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+        <TextView
+            android:id="@+id/eeg_device_connect_log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Not Connected" />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+
+        <Button
+
+            android:id="@+id/eeg_device_send_receive"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Setup Send Receive" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+        <TextView
+            android:id="@+id/eeg_device_send_receive_freq_log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="cc" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+
+
+        <Button
+
+            android:id="@+id/eeg_device_send_setup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Send Setup" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <Button
+
+            android:id="@+id/eeg_device_start_eeg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start Eeg" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+        <TextView
+            android:id="@+id/eeg_device_start_eeg_log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="dscc" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <Button
+
+            android:id="@+id/eeg_device_without_send"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Without Send" />
+
+        <Button
+
+            android:id="@+id/eeg_device_counter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Counter Log" />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <TextView
+            android:id="@+id/eeg_device_counter_log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="dscc" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+        <Button
+
+            android:id="@+id/eeg_device_stop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Stop Chat" />
+
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

@@ -30,6 +30,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Mobile - Device 2 " />
+
+        <Button
+            android:id="@+id/main_mobile_eegdevice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="EEG - Device" />
     </LinearLayout>
 
 
