@@ -198,7 +198,7 @@ public class EEGDeviceReceiveThread extends Thread {
 
 
         if (byteLength > 0) {
-            log.i("readByOneByOne run 5" + System.currentTimeMillis() + " " + byteLength);
+//            log.i("readByOneByOne run 5" + System.currentTimeMillis() + " " + byteLength);
 //                log.i( "readByBuffer run 6: "+ System.currentTimeMillis() + " "  + availableBytes);
             mReadHandler.obtainMessage(MESSAGE_READ, byteLength, -1,
                     byteArrayOutputStream).sendToTarget();
