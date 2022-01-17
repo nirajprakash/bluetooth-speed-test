@@ -203,9 +203,11 @@ public class EEGDeviceReceiveThread extends Thread {
             mReadHandler.obtainMessage(MESSAGE_READ, byteLength, -1,
                     byteArrayOutputStream).sendToTarget();
 
+            mDeviceGate.holdReadForced();
+            return;
         }
 
-        mDeviceGate.holdReadForced();
+        mDeviceGate.holdRead();
     }
 
 
