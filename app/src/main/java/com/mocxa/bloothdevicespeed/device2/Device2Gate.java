@@ -149,6 +149,7 @@ public class Device2Gate {
     }
 
     public void enableWrite() {
+        log.i("enableWrite 1: ");
         enableWrite(System.currentTimeMillis());
     }
 
@@ -159,7 +160,7 @@ public class Device2Gate {
         }
         if (mWriteActive.compareAndSet(false, true)) {
             mWriteStartTime = currentTime;
-//            log.i("enable Write");
+            log.i("enable Write 2:");
             mWriteCounterLog++;
 
         }
