@@ -372,7 +372,6 @@ public class BluetoothEEGDeviceController {
                     mDeviceSenderThread.sendMessage(nextMessage);
                 }else{
                     mIsSendingSetup = false;
-                    mDeviceGate.toggleSetup(false);
                     _mEventMessage.postValue(new LiveDataEvent<>("Setup Sent"));
                 }
 
@@ -465,6 +464,7 @@ public class BluetoothEEGDeviceController {
 
 
 
+            mDeviceGate.toggleSetup(false);
 
             mPeriodicSender = new TimerTask() {
                 @Override
