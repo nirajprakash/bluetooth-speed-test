@@ -74,6 +74,8 @@ public class EEGDeviceGate {
                     mReadPeriodLog += periodRead;
 //                log.i("hold Read");
                 }
+            }else{
+                holdRead();
             }
 
 
